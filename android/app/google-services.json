@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "950631202188",
+    "firebase_url": "https://buddies-osaka.firebaseio.com",
+    "project_id": "buddies-osaka",
+    "storage_bucket": "buddies-osaka.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:950631202188:android:a6fd817440e7af55",
+        "android_client_info": {
+          "package_name": "com.azur.buddies_osaka"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "950631202188-vnrlp07dp4lfkvsmoj45cdnvkn4onto4.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.azur.buddies_osaka",
+            "certificate_hash": "236610ff4a55278bff51aa362938056583e05eba"
+          }
+        },
+        {
+          "client_id": "950631202188-flcjukomqbhp2464n1uujh0alvl8f0l9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD631WS0eGDW6o3RwTEypBj6GzfJN-VtLw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "950631202188-flcjukomqbhp2464n1uujh0alvl8f0l9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
