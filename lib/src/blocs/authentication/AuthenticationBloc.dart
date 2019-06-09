@@ -59,6 +59,8 @@ class AuthenticationBloc {
         _email.value, _password.value);
   }
 
+  Future<void> signOut() => _repository.signOut();
+
   void dispose() async {
     await _email.drain();
     _email.close();

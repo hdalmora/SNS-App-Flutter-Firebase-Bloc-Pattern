@@ -2,7 +2,6 @@ import 'package:buddies_osaka/src/resources/Repository.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:async';
-import 'package:buddies_osaka/src/models/UserModel.dart';
 
 class UserBloc {
   final _repository = Repository();
@@ -18,17 +17,13 @@ class UserBloc {
 
   Observable<String> get about => _about.stream.transform(_validateAbout);
 
-  Observable<String> get nationality =>
-      _nationality.stream.transform(_validateAbout);
+  Observable<String> get nationality => _nationality.stream.transform(_validateAbout);
 
-  Observable<String> get dateOfArrival =>
-      _dateOfArrival.stream.transform(_validateDate);
+  Observable<String> get dateOfArrival => _dateOfArrival.stream.transform(_validateDate);
 
-  Observable<String> get industry =>
-      _industry.stream.transform(_validateIndustry);
+  Observable<String> get industry => _industry.stream.transform(_validateIndustry);
 
-  Observable<Map<String, String>> get languages =>
-      _languages.stream.transform(_validateLanguages);
+  Observable<Map<String, String>> get languages => _languages.stream.transform(_validateLanguages);
 
   final _validateName =
       StreamTransformer<String, String>.fromHandlers(handleData: (name, sink) {
@@ -107,8 +102,7 @@ class UserBloc {
 
   Future<bool> isAnonym() => _repository.isUserAnonymous();
 
-  Stream<DocumentSnapshot> getUserData(String documentID) =>
-      _repository.getUserData(documentID);
+  Stream<DocumentSnapshot> getUserData(String documentID) => _repository.getUserData(documentID);
 
   void dispose() async {
     await _name.drain();

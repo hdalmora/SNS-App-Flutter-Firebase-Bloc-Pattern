@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:buddies_osaka/src/resources/AuthenticationResources.dart';
 import 'dart:async';
-import 'package:buddies_osaka/src/ui/NavigationPage.dart';
+import 'package:buddies_osaka/src/ui/Home/HomePage.dart';
 import 'package:buddies_osaka/src/ui/LoginPage.dart';
 
 class RootPage extends StatefulWidget {
@@ -26,7 +26,7 @@ class _RootPageState extends State<RootPage> {
     return StreamBuilder<FirebaseUser>(
       stream: currentUser,
       builder: (BuildContext context, AsyncSnapshot<FirebaseUser> snapshot) {
-        return snapshot.hasData ? NavigationPage() : LoginPage();
+        return snapshot.hasData ? HomePage() : LoginPage();
       },
     );
   }

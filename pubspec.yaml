@@ -19,6 +19,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  rect_getter: 0.0.1
   firebase_auth: ^0.11.1+3
   google_sign_in: ^4.0.1+3
   cloud_firestore: ^0.12.1
@@ -54,10 +55,28 @@ flutter:
     - assets/images/b_map_w.png
     - assets/images/user-image-placeholder.jpg
     - assets/images/airport-placeholder.jpg
+    - assets/images/efe-kurnaz.jpg
+    - assets/images/rodion-kutsaev.jpeg
+    - assets/images/steve-johnson.jpeg
 
   fonts:
-    - family: Montserrat
+    - family: SF Pro Display
       fonts:
-        - asset: assets/fonts/Montserrat-Regular.ttf
-        - asset: assets/fonts/Montserrat-Bold.ttf
-        - weight: 700
+        - asset: assets/fonts/SF-Pro-Display-Ultralight.otf
+          weight: 100
+        - asset: assets/fonts/SF-Pro-Display-Thin.otf
+          weight: 200
+        - asset: assets/fonts/SF-Pro-Display-Light.otf
+          weight: 300
+        - asset: assets/fonts/SF-Pro-Display-Regular.otf
+          weight: 400
+        - asset: assets/fonts/SF-Pro-Display-Medium.otf
+          weight: 500
+        - asset: assets/fonts/SF-Pro-Display-Semibold.otf
+          weight: 600
+        - asset: assets/fonts/SF-Pro-Display-Bold.otf
+          weight: 700
+        - asset: assets/fonts/SF-Pro-Display-Heavy.otf
+          weight: 800
+        - asset: assets/fonts/SF-Pro-Display-Black.otf
+          weight: 900

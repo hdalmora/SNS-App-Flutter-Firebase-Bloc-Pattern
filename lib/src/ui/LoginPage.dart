@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
 import 'package:buddies_osaka/src/ui/widgets/authentication_form.dart';
-import 'package:buddies_osaka/src/blocs/authentication/AuthenticationBlocProvider.dart';
 
 
 
