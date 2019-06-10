@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:buddies_osaka/src/ui/widgets/description-text-widget.dart';
+import 'package:buddies_osaka/src/ui/widgets/description_text_widget.dart';
 import 'package:buddies_osaka/src/models/UserModel.dart';
 
 class ProfilePage extends StatefulWidget {

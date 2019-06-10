@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'FirestoreResources.dart';
 import 'AuthenticationResources.dart';
-import 'package:rxdart/rxdart.dart';
 import 'dart:async';
 
 class Repository {
@@ -17,20 +16,18 @@ class Repository {
   Future<void> createUserProfile(String userID, String email, String name, String about, String arrivalOfJapan, String nationality, Map<String, String> languages, String industry) =>
       _firestoreResources.createUserProfile(userID, email, name, about, arrivalOfJapan, nationality, languages, industry);
 
-  Stream<DocumentSnapshot> getUserData(String documentID) =>
-      _firestoreResources.getUserData(documentID);
+  Stream<DocumentSnapshot> getUserData(String documentID) => _firestoreResources.getUserData(documentID);
 
-  Future<void> signInAnonymously() {
-    return _authResources.signInAnonymously();
-  }
+  Future<void> signInAnonymously() => _authResources.signInAnonymously();
 
-  Future<int> signInWithEmailAndPassword(String email, String password) {
-    return _authResources.signInWithEmailAndPassword(email, password);
-  }
 
-  Future<int> signUpWithEmailAndPassword(String email, String password) {
-    return _authResources.signUpWithEmailAndPassword(email, password);
-  }
+  Future<int> signInWithEmailAndPassword(String email, String password) => _authResources.signInWithEmailAndPassword(email, password);
+
+
+  Future<int> signUpWithEmailAndPassword(String email, String password) => _authResources.signUpWithEmailAndPassword(email, password);
+
+
+  Future<void> signOut() => _authResources.signOut;
 
 
 }

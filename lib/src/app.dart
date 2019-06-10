@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:buddies_osaka/src/blocs/user/UserBlocProvider.dart';
 import 'package:buddies_osaka/src/ui/LoginPage.dart';
 import 'package:buddies_osaka/src/blocs/authentication/AuthenticationBlocProvider.dart';
-import 'package:buddies_osaka/src/ui/HomePage.dart';
+import 'package:buddies_osaka/src/ui/Home/HomePage.dart';
 import 'package:buddies_osaka/src/ui/RootPage.dart';
 
 class BuddyOsakaApp extends StatelessWidget {
@@ -13,8 +13,9 @@ class BuddyOsakaApp extends StatelessWidget {
         child: MaterialApp(
           title: 'Buddy Osaka',
           theme: ThemeData(
+            accentColor: Colors.blueAccent,
             primarySwatch: Colors.blue,
-            fontFamily: 'Montserrat',
+            fontFamily: 'SF Pro Display',
           ),
           initialRoute: RootPage.routeName,
           routes: {
