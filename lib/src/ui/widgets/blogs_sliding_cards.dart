@@ -1,20 +1,17 @@
 import 'package:flutter/material.dart';
-
 import 'package:flutter/rendering.dart';
-
 import 'dart:math' as math;
-
-
+import 'package:buddies_osaka/src/blocs/blogs/BlogBloc.dart';
+import 'package:buddies_osaka/src/blocs/blogs/BlogBlocProvider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:buddies_osaka/src/models/BlogModel.dart';
 
 class BlogsSlidingCardsView extends StatefulWidget {
 
   @override
-
   _BlogsSlidingCardsViewState createState() => _BlogsSlidingCardsViewState();
 
 }
-
-
 
 class _BlogsSlidingCardsViewState extends State<BlogsSlidingCardsView> {
 
@@ -22,20 +19,22 @@ class _BlogsSlidingCardsViewState extends State<BlogsSlidingCardsView> {
 
   double pageOffset = 0;
 
+  BlogBloc _blogBloc;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    print("SDSADASDASDASD 111111");
+    _blogBloc = BlogBlocProvider.of(context);
+  }
 
 
   @override
-
   void initState() {
-
     super.initState();
-
     pageController = PageController(viewportFraction: 0.8);
-
     pageController.addListener(() {
-
       setState(() => pageOffset = pageController.page);
-
     });
 
   }
@@ -45,99 +44,71 @@ class _BlogsSlidingCardsViewState extends State<BlogsSlidingCardsView> {
   @override
 
   void dispose() {
-
+    _blogBloc.dispose();
     pageController.dispose();
-
     super.dispose();
-
   }
 
 
 
   @override
-
   Widget build(BuildContext context) {
 
     return SizedBox(
+      height: MediaQuery.of(context).size.height * 0.30,
 
-      height: MediaQuery.of(context).size.height * 0.28,
+      child: StreamBuilder(
+        stream: _blogBloc.blogsList(5),
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if(snapshot.hasData) {
+            List<DocumentSnapshot> docs = snapshot.data.documents;
+            List<BlogModel> blogsList = List<BlogModel>();
 
-      child: PageView(
+            docs.forEach((doc) {
+              blogsList.add(BlogModel.fromDocument(doc));
+            });
 
-        controller: pageController,
+            if(blogsList.isNotEmpty) {
+                return PageView.builder(
+                    controller: pageController,
+                    itemCount: blogsList.length,
+                    itemBuilder: (context, position) {
+                      DateTime date = DateTime.fromMicrosecondsSinceEpoch(blogsList[position].date.microsecondsSinceEpoch);
+                      return  SlidingCard(
 
-        children: <Widget>[
+                        title: blogsList[position].title,
 
-          SlidingCard(
+                        content: blogsList[position].content,
 
-            title: 'My blog post title here',
+                        author: blogsList[position].authorEmail,
 
-            content: 'My blog post and all its content are displayed here',
+                        date: date.month.toString() + "/" + date.day.toString() + "/" + date.year.toString(),
 
-            author: "Henrique Dal Mora",
+                        offset: pageOffset - position,
 
-            date: '01/06/2019',
+                        callback: () {
 
-            assetName: 'images/steve-johnson.jpeg',
+                        },
 
-            offset: pageOffset,
+                      );
+                    },
+                );
 
-          ),
-
-          SlidingCard(
-
-            title: 'My blog post title here',
-
-            content: 'My blog post and all its content are displayed here',
-
-            author: "Henrique Dal Mora",
-
-            date: '01/06/2019',
-
-            assetName: 'images/rodion-kutsaev.jpeg',
-
-            offset: pageOffset - 1,
-
-          ),
-
-          SlidingCard(
-
-            title: 'My blog post title here',
-
-            content: 'My blog post and all its content are displayed here',
-
-            author: "Henrique Dal Mora",
-
-            date: '01/06/2019',
-
-            assetName: 'images/rodion-kutsaev.jpeg',
-
-            offset: pageOffset - 2,
-
-          ),
-
-          SlidingCard(
-
-            title: 'My blog post title here',
-
-            content: 'My blog post and all its content are displayed here',
-
-            author: "Henrique Dal Mora",
-
-            date: '01/06/2019',
-
-            assetName: 'images/rodion-kutsaev.jpeg',
-
-            offset: pageOffset - 3,
-
-          ),
-
-        ],
-
+            }else {
+              return Text("No Blogs created");
+            }
+          } else {
+            return Container(
+              alignment: Alignment.topCenter,
+              margin: EdgeInsets.only(bottom: 15.0, top: 30.0),
+              child: CircularProgressIndicator(
+                backgroundColor: Color(0xFF3498db),
+              ),
+            );
+          }
+        }
       ),
-
     );
-
   }
 
 }
@@ -154,9 +125,9 @@ class SlidingCard extends StatelessWidget {
 
   final String date;
 
-  final String assetName;
-
   final double offset;
+
+  final VoidCallback callback;
 
 
 
@@ -172,9 +143,9 @@ class SlidingCard extends StatelessWidget {
 
     @required this.date,
 
-    @required this.assetName,
-
     @required this.offset,
+
+    @required this.callback,
 
   }) : super(key: key);
 
@@ -190,42 +161,45 @@ class SlidingCard extends StatelessWidget {
 
       offset: Offset(-32 * gauss * offset.sign, 0),
 
-      child: Card(
+      child: InkWell(
+        onTap: callback,
+        child: Card(
 
-        margin: EdgeInsets.only(left: 8, right: 8, bottom: 24),
+          margin: EdgeInsets.only(left: 8, right: 8, bottom: 24),
 
-        elevation: 8,
+          elevation: 8,
 
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(32)),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(32)),
 
-        child: Column(
+          child: Column(
 
-          children: <Widget>[
+            children: <Widget>[
 
-            SizedBox(height: 8),
+              SizedBox(height: 8),
 
-            Expanded(
+              Expanded(
 
-              child: CardContent(
+                child: CardContent(
 
-                title: title,
+                  title: title,
 
-                content: content,
+                  content: content,
 
-                author: author,
+                  author: author,
 
-                date: date,
+                  date: date,
 
-                offset: gauss,
+                  offset: gauss,
+
+                ),
 
               ),
 
-            ),
+            ],
 
-          ],
+          ),
 
         ),
-
       ),
 
     );

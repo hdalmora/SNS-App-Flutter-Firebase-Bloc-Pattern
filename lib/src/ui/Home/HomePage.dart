@@ -5,7 +5,7 @@ import 'package:buddies_osaka/src/blocs/user/UserBloc.dart';
 import 'package:buddies_osaka/src/ui/Home/Blogs.dart';
 import 'package:buddies_osaka/src/ui/Home/Questions.dart';
 import 'package:buddies_osaka/src/ui/Home/Events.dart';
-import 'package:buddies_osaka/src/ui/AddToCommunityPage.dart';
+import 'package:buddies_osaka/src/ui/AddToCommunity/AddToCommunityPage.dart';
 import 'package:buddies_osaka/src/ui/widgets/user_profile_bottom_sheet.dart';
 import 'package:buddies_osaka/src/ui/widgets/upper_tabs.dart';
 import 'package:rect_getter/rect_getter.dart';
@@ -34,8 +34,6 @@ class _HomePageState extends State<HomePage> {
 
   AuthenticationBloc _authBloc;
 
-  bool _showFAB = false;
-
   bool _blogsSelected = true;
   bool _eventsSelected = false;
   bool _qAndASelected = false;
@@ -53,7 +51,6 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    setState(() { _user != null ? _showFAB = true : _showFAB = false; });
     _pageController = PageController();
   }
 
@@ -159,17 +156,6 @@ class _HomePageState extends State<HomePage> {
                 ),
               ],
             ),
-            floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
-            floatingActionButton: _showFAB ? RectGetter(
-              key: rectGetterKey,
-              child: Container(
-                margin: EdgeInsets.only(bottom: 0.0),
-                child: FloatingActionButton(
-                  onPressed: _onTapFAB,
-                  child: Icon(Icons.add),
-                ),
-              ),
-            ) : Container(),
             drawer: Drawer(
               child: ListView(
                 padding: EdgeInsets.zero,
@@ -370,7 +356,7 @@ class _HomePageState extends State<HomePage> {
                                     /// PROFILE NOT YET CREATED
                                     ///
                                     return Positioned(
-                                      height: 130,
+                                      height: 140,
                                       left: 0,
                                       right: 0,
                                       bottom: 0,
@@ -385,7 +371,7 @@ class _HomePageState extends State<HomePage> {
                                         child: Stack(
                                           children: <Widget>[
                                             Container(
-                                              margin: EdgeInsets.all(15.0),
+                                              margin: EdgeInsets.all(10.0),
                                               child: Column(
                                                 mainAxisAlignment:
                                                     MainAxisAlignment.start,
@@ -413,7 +399,7 @@ class _HomePageState extends State<HomePage> {
                                                         color: Colors.white),
                                                   ),
                                                   SizedBox(
-                                                    height: 20.0,
+                                                    height: 15.0,
                                                   ),
                                                   Align(
                                                     alignment:
@@ -456,9 +442,29 @@ class _HomePageState extends State<HomePage> {
                                     /// PROFILE ALREADY CREATED
                                     ///
                                     _user = UserModel.fromDocument(snapshot.data);
-                                    _showFAB = true;
                                     return Container(
-                                        child: UserProfileBottomSheet(name:_user.name, industry:_user.industry, nationality:_user.nationality, about: _user.about,));
+                                        child: Stack(
+                                          children: <Widget>[
+                                            UserProfileBottomSheet(name:_user.name, industry:_user.industry, nationality:_user.nationality, about: _user.about,),
+                                            Container(
+                                              margin: EdgeInsets.all(15.0),
+                                              child: Align(
+                                                alignment: Alignment.bottomRight,
+                                                child: RectGetter(
+                                                  key: rectGetterKey,
+                                                  child: Container(
+                                                    margin: EdgeInsets.only(bottom: 0.0),
+                                                    child: FloatingActionButton(
+                                                      onPressed: _onTapFAB,
+                                                      child: Icon(Icons.add),
+                                                    ),
+                                                  ),
+                                                ),
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      );
                                   }
                                 } else {
                                   return Container(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:buddies_osaka/src/components/button-main-text-icon.dart';
+import 'package:buddies_osaka/src/ui/AddToCommunity/AddBlogPage.dart';
 
 
 class AddToCommunityPage extends StatefulWidget {
@@ -52,7 +53,10 @@ class _AddToCommunityPageState extends State<AddToCommunityPage> {
                       padding: EdgeInsets.only(left: 10.0, right: 10.0),
                       child: ButtonMainTextIcon(
                         callback: () async {
-
+                          Navigator.push(
+                              context,
+                              new MaterialPageRoute(
+                                  builder: (BuildContext context) => AddBlogPage()));
                         },
                         bgColor: Colors.white,
                         paddingLeft: 0.0,

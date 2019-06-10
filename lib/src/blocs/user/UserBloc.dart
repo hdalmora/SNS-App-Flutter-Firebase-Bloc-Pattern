@@ -2,6 +2,8 @@ import 'package:buddies_osaka/src/resources/Repository.dart';
 import 'package:rxdart/rxdart.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'dart:async';
+import 'package:firebase_auth/firebase_auth.dart';
+
 
 class UserBloc {
   final _repository = Repository();
@@ -90,17 +92,19 @@ class UserBloc {
   Function(bool) get showProgressBar => _isSubmitted.sink.add;
 
   Future<void> createUserProfile() async {
-    String id = await getUserUID();
-    String email = await getUserEmail();
-
-    return _repository.createUserProfile(id, email, _name.value, _about.value, _dateOfArrival.value, _nationality.value, _languages.value, _industry.value);
+    FirebaseUser user = await _repository.getUserAuth();
+    _repository.createUserProfile(user.uid, user.email, _name.value, _about.value, _dateOfArrival.value, _nationality.value, _languages.value, _industry.value);
   }
 
-  Future<String> getUserUID() => _repository.getUserUID();
+  Future<bool> isAnonym() async {
+    FirebaseUser user = await _repository.getUserAuth();
+    return user.isAnonymous;
+  }
 
-  Future<String> getUserEmail() => _repository.getUserEmail();
-
-  Future<bool> isAnonym() => _repository.isUserAnonymous();
+  Future<String> getUserUID() async {
+    FirebaseUser user = await _repository.getUserAuth();
+    return user.uid;
+  }
 
   Stream<DocumentSnapshot> getUserData(String documentID) => _repository.getUserData(documentID);
 
