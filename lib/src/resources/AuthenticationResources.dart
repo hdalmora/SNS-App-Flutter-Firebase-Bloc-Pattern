@@ -8,6 +8,9 @@ class AuthenticationResources {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
 
+  Future<FirebaseUser> getUserAuth() async => await _firebaseAuth.currentUser();
+
+
   Future<bool> isUserAnonymous() async {
     final FirebaseUser user = await _firebaseAuth.currentUser();
     return user.isAnonymous;

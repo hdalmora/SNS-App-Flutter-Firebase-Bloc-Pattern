@@ -7,7 +7,7 @@ class Repository {
   final _firestoreResources = FirestoreProvider();
   final _authResources = AuthenticationResources();
 
-  Future<String> getUserUID() => _authResources.getUserUID();
+  Future<FirebaseUser> getUserAuth() => _authResources.getUserAuth();
 
   Future<String> getUserEmail() => _authResources.getUserEmail();
 
@@ -28,6 +28,10 @@ class Repository {
 
 
   Future<void> signOut() => _authResources.signOut;
+
+  Future<void> postBlog(String userUID, String userEmail, String title, String content) => _firestoreResources.postBlog(userUID, userEmail, title, content);
+
+  Stream<QuerySnapshot> blogsList(int limit) => _firestoreResources.blogsList(limit);
 
 
 }
