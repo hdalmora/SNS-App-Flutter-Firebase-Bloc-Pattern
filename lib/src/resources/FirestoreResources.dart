@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:buddies_osaka/src/models/BlogModel.dart';
 
 class FirestoreProvider {
   Firestore _firestore = Firestore.instance;
@@ -28,9 +29,28 @@ class FirestoreProvider {
           'authorEmail': userEmail,
           'title': title,
           'content': content,
+          'likesCounter': 0,
           'timestamp': FieldValue.serverTimestamp()
         }));
 
+
+  Future<void> likeBlogPost(String blogUID, String userUID) async => _firestore
+      .collection("blogLikes")
+      .document('$blogUID:$userUID')
+      .setData({});
+
+  Future<void> unlikeBlogPost(String blogUID, String userUID) async => _firestore
+      .collection("blogLikes")
+      .document('$blogUID:$userUID')
+      .delete();
+
+  Future<bool> hasLikedBlog(String blogUID, String userUID) async {
+    final like = await _firestore
+        .collection('blogLikes')
+        .document('$blogUID:$userUID')
+        .get();
+    return like.exists;
+  }
 
   Stream<QuerySnapshot> blogsList(int limit) => _firestore
       .collection("blogs")

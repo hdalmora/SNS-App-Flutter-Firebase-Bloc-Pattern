@@ -33,5 +33,11 @@ class Repository {
 
   Stream<QuerySnapshot> blogsList(int limit) => _firestoreResources.blogsList(limit);
 
+  Future<void> likeBlogPost(String blogUID, String userUID) async => _firestoreResources.likeBlogPost(blogUID, userUID);
 
-}
+  Future<void> unlikeBlogPost(String blogUID, String userUID) async => _firestoreResources.unlikeBlogPost(blogUID, userUID);
+
+  Future<bool> hasLikedBlog(String blogUID, String userUID) async => _firestoreResources.hasLikedBlog(blogUID, userUID);
+
+
+  }

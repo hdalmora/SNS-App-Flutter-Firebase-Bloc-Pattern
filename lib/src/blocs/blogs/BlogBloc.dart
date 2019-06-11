@@ -84,4 +84,22 @@ class BlogBloc {
   }
 
   Stream<QuerySnapshot> blogsList(int limit) => _repository.blogsList(limit);
+
+  Future<void> likeBlogPost(String blogUID) async {
+    String uid = await getUserUID();
+
+    await _repository.likeBlogPost(blogUID, uid);
+  }
+
+  Future<void> unlikeBlogPost(String blogUID) async {
+    String uid = await getUserUID();
+
+    await _repository.unlikeBlogPost(blogUID, uid);
+  }
+
+  Future<bool> hasLikedBlog(String blogUID) async {
+    String uid = await getUserUID();
+
+    return _repository.hasLikedBlog(blogUID, uid);
+  }
 }
