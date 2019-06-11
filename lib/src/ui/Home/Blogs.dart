@@ -30,30 +30,6 @@ class _BlogsState extends State<Blogs> {
                     SizedBox(height: 5),
 
                     BlogsSlidingCardsView(),
-                    Container(
-                      margin: EdgeInsets.only(right: 15.0),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: <Widget>[
-                          Text(
-
-                            "View All >",
-
-                            style: TextStyle(
-
-                              fontSize: 18,
-
-                              color: Colors.black45, //: Colors.grey,
-
-                              fontWeight:FontWeight.w800,
-
-                            ),
-
-                          ),
-                        ],
-                      ),
-                    ),
                   ],
                 ),
               ],

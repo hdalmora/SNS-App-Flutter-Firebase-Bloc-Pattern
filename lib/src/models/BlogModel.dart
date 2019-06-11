@@ -7,9 +7,10 @@ class BlogModel {
   final String title;
   final String content;
   final Timestamp date;
+  final int likesCounter;
 
 
-  BlogModel({this.id, this.authorID, this.authorEmail, this.title, this.content, this.date});
+  BlogModel({this.id, this.authorID, this.authorEmail, this.title, this.content, this.date, this.likesCounter});
 
   factory BlogModel.fromDocument(DocumentSnapshot document) {
 
@@ -25,7 +26,9 @@ class BlogModel {
 
       content: document["content"],
 
-      date: document['timestamp'],
+      date: document['timestamp'] != null ? document['timestamp'] : Timestamp(0, 0),
+
+      likesCounter: document['likesCounter'] != null ? document['likesCounter'] : 0,
 
     );
 
