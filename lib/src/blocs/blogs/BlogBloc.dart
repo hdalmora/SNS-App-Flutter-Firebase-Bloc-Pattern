@@ -85,6 +85,11 @@ class BlogBloc {
 
   Stream<QuerySnapshot> blogsList(int limit) => _repository.blogsList(limit);
 
+  Future<QuerySnapshot> fetchBlogs(int limit) => _repository.fetchBlogs(limit);
+
+  Future<QuerySnapshot> fetchBlogsFromLastDocument(int limit, DocumentSnapshot lastDoc) =>
+      _repository.fetchBlogsFromLastDocument(limit, lastDoc);
+
   Future<void> likeBlogPost(String blogUID) async {
     String uid = await getUserUID();
 

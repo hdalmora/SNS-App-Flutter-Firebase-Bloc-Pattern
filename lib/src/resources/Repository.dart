@@ -39,5 +39,8 @@ class Repository {
 
   Future<bool> hasLikedBlog(String blogUID, String userUID) async => _firestoreResources.hasLikedBlog(blogUID, userUID);
 
+  Future<QuerySnapshot> fetchBlogs(int limit) => _firestoreResources.fetchBlogs(limit);
+
+  Future<QuerySnapshot> fetchBlogsFromLastDocument(int limit, DocumentSnapshot lastDoc) async => _firestoreResources.fetchBlogsFromLastDocument(limit, lastDoc);
 
   }

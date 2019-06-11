@@ -58,6 +58,19 @@ class FirestoreProvider {
       .orderBy('timestamp', descending: true)
       .snapshots();
 
+  Future<QuerySnapshot> fetchBlogs(int limit) => _firestore
+      .collection("blogs")
+      .limit(limit)
+      .orderBy('timestamp', descending: true)
+      .getDocuments();
+
+  Future<QuerySnapshot> fetchBlogsFromLastDocument(int limit, DocumentSnapshot lastDoc) => _firestore
+      .collection("blogs")
+      .limit(limit)
+      .orderBy('timestamp', descending: true)
+      .startAfter([lastDoc['timestamp']])
+      .getDocuments();
+
   Stream<DocumentSnapshot> getUserData(String documentId) => _firestore.collection("users").document(documentId).snapshots();
 
 }

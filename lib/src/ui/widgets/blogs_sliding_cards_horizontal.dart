@@ -1,4 +1,3 @@
-import 'package:async/async.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'dart:math' as math;
@@ -55,7 +54,7 @@ class _BlogsSlidingCardsViewState extends State<BlogsSlidingCardsView> {
     return SizedBox(
       height: MediaQuery.of(context).size.height * 0.3,
       child: StreamBuilder(
-          stream: _blogBloc.blogsList(5),
+          stream: _blogBloc.blogsList(3),
           builder:
               (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
             if (snapshot.hasData) {
@@ -90,25 +89,8 @@ class _BlogsSlidingCardsViewState extends State<BlogsSlidingCardsView> {
                         );
                       },
                     ),
-                    Container(
-                      margin: EdgeInsets.only(right: 15.0, top: MediaQuery.of(context).size.height * 0.275,),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        crossAxisAlignment: CrossAxisAlignment.end,
-                        children: <Widget>[
-                          Text(
-                            "View All >",
-                            style: TextStyle(
-                              fontSize: 16,
 
-                              color: Colors.black45, //: Colors.grey,
 
-                              fontWeight: FontWeight.w900,
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
                   ],
                 );
               } else {
