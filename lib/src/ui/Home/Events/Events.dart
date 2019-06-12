@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:buddies_osaka/src/ui/widgets/events_sliding_cards.dart';
+import 'package:buddies_osaka/src/ui/widgets/events_sliding_cards_horizontal.dart';
 
 class Events extends StatefulWidget {
   static const String routeName = 'root_screen';
