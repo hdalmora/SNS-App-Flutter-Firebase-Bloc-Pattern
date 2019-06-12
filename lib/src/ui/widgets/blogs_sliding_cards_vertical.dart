@@ -106,11 +106,17 @@ class _BlogsVerticalSlidingCardsViewState extends State<BlogsVerticalSlidingCard
     }
   }
 
-  void _likeBlog(String blogUID) async {
-    if(await _blogBloc.hasLikedBlog(blogUID)) {
-      _blogBloc.unlikeBlogPost(blogUID);
+  void _likeBlog(int position) async {
+    if(await _blogBloc.hasLikedBlog(_blogsList[position].id)) {
+      setState(() {
+        _blogBloc.unlikeBlogPost(_blogsList[position].id);
+        _blogsList[position].likesCounter -= 1;
+      });
     } else {
-      _blogBloc.likeBlogPost(blogUID);
+      setState(() {
+        _blogBloc.likeBlogPost(_blogsList[position].id);
+        _blogsList[position].likesCounter += 1;
+      });
     }
   }
 
@@ -141,16 +147,17 @@ class _BlogsVerticalSlidingCardsViewState extends State<BlogsVerticalSlidingCard
                           DateTime date = DateTime.fromMicrosecondsSinceEpoch(
                               _blogsList[position].date.microsecondsSinceEpoch);
 
+                          int likesCounter = _blogsList[position].likesCounter;
                           return SlidingCard(
                             title: _blogsList[position].title,
                             content: _blogsList[position].content,
                             author: _blogsList[position].authorEmail,
                             date: date.month.toString() + "/" + date.day.toString() + "/" + date.year.toString(),
-                            likes: _blogsList[position].likesCounter.toString(),
+                            likes: likesCounter.toString(),
                             alreadyLiked: _blogBloc.hasLikedBlog(_blogsList[position].id),
                             callback: () {},
                             onLikePressed: () async {
-                              _likeBlog(_blogsList[position].id);
+                              _likeBlog(position);
                             },
                           );
                         },
