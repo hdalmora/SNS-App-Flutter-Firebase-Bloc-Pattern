@@ -131,6 +131,7 @@ class _AddBlogPageState extends State<AddBlogPage> {
                                 await _blogBloc.submit();
 
                                 showErrorMessage("New Blog posted successfully!");
+
                               } else {
                                 showErrorMessage("Invalid fields");
                               }

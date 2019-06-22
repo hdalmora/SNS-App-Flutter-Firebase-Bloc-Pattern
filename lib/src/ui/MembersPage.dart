@@ -24,28 +24,27 @@ class _MembersPageState extends State<MembersPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       key: _scaffoldKey,
-      backgroundColor: Color(0xFF204D9E),
+      backgroundColor: Colors.white,
       resizeToAvoidBottomPadding: false,
+      appBar: AppBar(
+        elevation: 0.0,
+        title: Text("Members", style: TextStyle(
+            fontWeight: FontWeight.bold,
+            fontSize: 22.0,
+            color: Colors.black54),),
+        centerTitle: true,
+        backgroundColor: Colors.white,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          color: Colors.grey,
+        ),
+      ),
       body: ListView(
         children: <Widget>[
-          Container(
-            alignment: Alignment.center,
-            margin: EdgeInsets.only(top: 10.0),
-            child: Column(
-              children: <Widget>[
-                Text(
-                  "Members",
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                    fontSize: 32.0,
-                    fontFamily: 'Montserrat',
-                  ),
-                ),
-              ],
-            ),
-          ),
-          SizedBox(height: 20.0),
+          SizedBox(height: 15.0),
           GridView.count(
             crossAxisCount: 2,
             primary: false,
@@ -57,6 +56,10 @@ class _MembersPageState extends State<MembersPage> {
               _buildCard('Burak', 'Unavailable', 2),
               _buildCard('Henrique', 'Unavailable', 3),
               _buildCard('Burak', 'Available', 4),
+              _buildCard('Henrique', 'Unavailable', 5),
+              _buildCard('User', 'Available', 6),
+              _buildCard('Henrique', 'Unavailable', 5),
+              _buildCard('User', 'Available', 6),
               _buildCard('Henrique', 'Unavailable', 5),
               _buildCard('User', 'Available', 6),
             ],

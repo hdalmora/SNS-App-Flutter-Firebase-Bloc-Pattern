@@ -42,7 +42,7 @@ class _BlogsSlidingCardsViewState extends State<BlogsSlidingCardsView> {
   }
 
   void _likeBlog(String blogUID) async {
-    if(await _blogBloc.hasLikedBlog(blogUID)) {
+    if (await _blogBloc.hasLikedBlog(blogUID)) {
       _blogBloc.unlikeBlogPost(blogUID);
     } else {
       _blogBloc.likeBlogPost(blogUID);
@@ -78,10 +78,15 @@ class _BlogsSlidingCardsViewState extends State<BlogsSlidingCardsView> {
                           title: blogsList[position].title,
                           content: blogsList[position].content,
                           author: blogsList[position].authorEmail,
-                          date: date.month.toString() + "/" + date.day.toString() + "/" + date.year.toString(),
+                          date: date.month.toString() +
+                              "/" +
+                              date.day.toString() +
+                              "/" +
+                              date.year.toString(),
                           likes: blogsList[position].likesCounter.toString(),
                           offset: pageOffset - position,
-                          alreadyLiked: _blogBloc.hasLikedBlog(blogsList[position].id),
+                          alreadyLiked:
+                              _blogBloc.hasLikedBlog(blogsList[position].id),
                           callback: () {},
                           onLikePressed: () async {
                             _likeBlog(blogsList[position].id);
@@ -89,12 +94,18 @@ class _BlogsSlidingCardsViewState extends State<BlogsSlidingCardsView> {
                         );
                       },
                     ),
-
-
                   ],
                 );
               } else {
-                return Text("No Blogs created");
+                return Center(
+                  child: Text(
+                    "No Blogs created...",
+                    style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        fontSize: 22.0,
+                        color: Colors.black38),
+                  ),
+                );
               }
             } else {
               return Container(
@@ -262,17 +273,16 @@ class CardContent extends StatelessWidget {
                 child: Row(
                   children: <Widget>[
                     FutureBuilder<dynamic>(
-                      future: alreadyLiked,
-                      builder: (context, AsyncSnapshot<dynamic> snapshot) {
-
+                        future: alreadyLiked,
+                        builder: (context, AsyncSnapshot<dynamic> snapshot) {
                           return IconButton(
-                            color: snapshot.data == true ? Colors.yellow : Colors.black26,
+                            color: snapshot.data == true
+                                ? Colors.yellow
+                                : Colors.black26,
                             icon: Icon(Icons.star),
                             onPressed: onLikePressed,
                           );
-
-                      }
-                    ),
+                        }),
                     Text(
                       likes,
                       style: TextStyle(

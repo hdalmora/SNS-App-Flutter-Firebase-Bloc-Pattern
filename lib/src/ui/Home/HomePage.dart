@@ -11,6 +11,7 @@ import 'package:buddies_osaka/src/ui/widgets/upper_tabs.dart';
 import 'package:rect_getter/rect_getter.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:buddies_osaka/src/ui/CreateProfilePage.dart';
+import 'package:buddies_osaka/src/ui/MembersPage.dart';
 import 'package:buddies_osaka/src/blocs/authentication/AuthenticationBloc.dart';
 import 'package:buddies_osaka/src/blocs/authentication/AuthenticationBlocProvider.dart';
 
@@ -150,7 +151,7 @@ class _HomePageState extends State<HomePage> {
               ),
               actions: <Widget>[
                 IconButton(
-                  icon: Icon(Icons.settings),
+                  icon: Icon(Icons.face),
                   onPressed: () {},
                   color: Colors.grey,
                 ),
@@ -190,6 +191,16 @@ class _HomePageState extends State<HomePage> {
                     leading: Icon(Icons.insert_emoticon),
                     title: Text("Community"),
                     onTap: () {},
+                  ),
+                  ListTile(
+                    leading: Icon(Icons.group),
+                    title: Text("Members"),
+                    onTap: () {
+                      Navigator.push(
+                          context,
+                          new MaterialPageRoute(
+                              builder: (BuildContext context) => MembersPage()));
+                    },
                   ),
                   ListTile(
                     leading: Icon(Icons.call_received),

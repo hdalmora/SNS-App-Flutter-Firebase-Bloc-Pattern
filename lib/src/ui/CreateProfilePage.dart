@@ -39,45 +39,25 @@ class _CreateProfilePageState extends State<CreateProfilePage> {
   List<DropdownMenuItem<String>> _dropDownIndustryMenuItems;
   List _industryLabels = [
     "Agriculture, Forestry, Fishing and Hunting",
-
     "Mining",
-
     "Utilities",
-
     "Construction/Architecture",
-
     "Manufacturing",
-
     "Wholesale Trade",
-
     "Retail Trade",
-
     "Transportation and Warehousing",
-
     "Finance and Insurance",
-
     "Software",
-
     "Professional, Scientific, and Technical Services",
-
     "Management of Companies and Enterprises",
-
     "Educational Services",
-
     "Health Care and Social Assistance",
-
     "Arts, Entertainment, and Recreation",
-
     "Accommodation and Food Services",
-
     "Other Services (except Public Administration)",
-
     "Consulting",
-
     "Public Administration",
-
     "Non-profit",
-
     "Other",
   ];
 
@@ -363,78 +343,69 @@ class _CreateProfilePageState extends State<CreateProfilePage> {
                           builder: (context, AsyncSnapshot<String> snapshot) {
                             return Row(
                               children: <Widget>[
-                                Container(
-                                  width: 70.0,
-                                  child: Material(
-                                    borderRadius: BorderRadius.circular(30.0),
-                                    color: Colors.blueGrey,
-                                    elevation: 1.0,
-                                    child: GestureDetector(
-                                      onTap: () async {
-                                        DateTime picked = await showDatePicker(
-                                            context: context,
-                                            initialDate: new DateTime.now(),
-                                            firstDate: new DateTime(2016),
-                                            lastDate: new DateTime(2020));
-                                        if (picked != null) {
-                                          _userBloc
-                                              .changeDate(picked.toString());
-                                          setState(() {
-                                            this._datePicked =
-                                                picked.toString();
-                                          });
-                                        }
-                                      },
-                                      child: Center(
-                                        child: Container(
-                                          padding: EdgeInsets.all(15.0),
-                                          child: Row(
-                                            crossAxisAlignment:
-                                                CrossAxisAlignment.center,
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: <Widget>[
-                                              Icon(
-                                                Icons.date_range,
-                                                color: Colors.white,
-                                              ),
-                                            ],
+                                Flexible(
+                                  flex: 2,
+                                  child: Container(
+                                    width: 60.0,
+                                    child: Material(
+                                      color: Colors.blue,
+                                      elevation: 3.0,
+                                      child: GestureDetector(
+                                        onTap: () async {
+                                          DateTime picked =
+                                              await showDatePicker(
+                                                  context: context,
+                                                  initialDate:
+                                                      new DateTime.now(),
+                                                  firstDate: new DateTime(2016),
+                                                  lastDate: new DateTime(2020));
+                                          if (picked != null) {
+                                            _userBloc
+                                                .changeDate(picked.toString());
+                                            setState(() {
+                                              this._datePicked =
+                                                  picked.toString();
+                                            });
+                                          }
+                                        },
+                                        child: Center(
+                                          child: Container(
+                                            child: Row(
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.center,
+                                              mainAxisAlignment:
+                                                  MainAxisAlignment.center,
+                                              children: <Widget>[
+                                                Icon(
+                                                  Icons.date_range,
+                                                  color: Colors.white,
+                                                ),
+                                              ],
+                                            ),
                                           ),
                                         ),
                                       ),
                                     ),
                                   ),
                                 ),
-                                Column(children: <Widget>[
-                                  Container(
-                                    width: 40.0,
+                                Flexible(
+                                  flex: 3,
+                                  child: Container(
                                     margin:
-                                        EdgeInsets.only(top: 15.0, left: 10.0),
+                                        EdgeInsets.only(top: 0.0, left: 10.0),
                                     child: Text(
                                       _datePicked.length >= 10
                                           ? _datePicked.substring(0, 10)
-                                          : "", //_datePicked.substring(0, 10),
+                                          : "You must pick a date of arrival in Japan.", //_datePicked.substring(0, 10),
                                       textAlign: TextAlign.start,
                                       style: TextStyle(
-                                          color: Colors.black38,
+                                          color: _datePicked.length >= 10
+                                              ? Colors.black38
+                                              : Colors.red,
                                           fontFamily: 'Montserrat',
                                           fontWeight: FontWeight.bold,
                                           fontSize: 13.0),
                                     ),
-                                  ),
-                                ]),
-                                Container(
-                                  width: 150.0,
-                                  child: Text(
-                                    _datePicked.length <= 0
-                                        ? "You must pick a date of arrival in Japan."
-                                        : "",
-                                    textAlign: TextAlign.start,
-                                    style: TextStyle(
-                                        color: Colors.redAccent,
-                                        fontFamily: 'Montserrat',
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 13.0),
                                   ),
                                 ),
                               ],
@@ -497,7 +468,6 @@ class _CreateProfilePageState extends State<CreateProfilePage> {
                   ],
                 ),
                 isActive: true),
-
             Step(
                 title: Text(
                   "Languages",
@@ -535,8 +505,7 @@ class _CreateProfilePageState extends State<CreateProfilePage> {
                                   width: 80.0,
                                   height: 30.0,
                                   child: Material(
-                                    borderRadius: BorderRadius.circular(30.0),
-                                    color: Colors.blueGrey,
+                                    color: Colors.blue,
                                     elevation: 1.0,
                                     child: GestureDetector(
                                       onTap: () async {
@@ -623,7 +592,6 @@ class _CreateProfilePageState extends State<CreateProfilePage> {
                   ],
                 ),
                 isActive: true),
-
             Step(
                 title: Text(
                   "Industry",
@@ -650,37 +618,34 @@ class _CreateProfilePageState extends State<CreateProfilePage> {
                       ),
                     ),
                     StreamBuilder<String>(
-                          stream: _userBloc.industry,
-                          builder: (context,
-                              AsyncSnapshot<String> snapshot) {
-                            return
-                              Container(
-                                margin: EdgeInsets.only(top: 15.0),
-                                child: Row(
-                                  children: <Widget>[
-                                    Expanded(
-                                      flex: 4,
-                                      child: DropdownButton(
-                                        isExpanded: true,
-                                        value: _selectedIndustry,
-                                        items: _dropDownIndustryMenuItems,
-                                        onChanged: (selectedIndustry) {
-                                          _userBloc.changeIndustry(selectedIndustry);
-                                          setState(() {
-                                            _selectedIndustry = selectedIndustry;
-                                          });
-                                        },
-                                      ),
-                                    ),
-                                  ],
+                        stream: _userBloc.industry,
+                        builder: (context, AsyncSnapshot<String> snapshot) {
+                          return Container(
+                            margin: EdgeInsets.only(top: 15.0),
+                            child: Row(
+                              children: <Widget>[
+                                Expanded(
+                                  flex: 4,
+                                  child: DropdownButton(
+                                    isExpanded: true,
+                                    value: _selectedIndustry,
+                                    items: _dropDownIndustryMenuItems,
+                                    onChanged: (selectedIndustry) {
+                                      _userBloc
+                                          .changeIndustry(selectedIndustry);
+                                      setState(() {
+                                        _selectedIndustry = selectedIndustry;
+                                      });
+                                    },
+                                  ),
                                 ),
-                              );
-
-                          }),
+                              ],
+                            ),
+                          );
+                        }),
                   ],
                 ),
                 isActive: true),
-
           ],
           type: StepperType.vertical,
           onStepTapped: (step) {
@@ -772,7 +737,6 @@ class _CreateProfilePageState extends State<CreateProfilePage> {
                     backgroundColor: Color(0xFF3498db),
                   ),
                 );
-
               }
             }),
       ),
