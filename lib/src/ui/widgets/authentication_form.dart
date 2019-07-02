@@ -165,7 +165,6 @@ class _AuthenticationFormState extends State<AuthenticationForm> {
             height: 45.0,
             child: ButtonMainTextIcon(
               callback: () async {
-                //TODO: Insert google SignIn in Auth Bloc
                 _authBloc.authenticateWithGoogle();
               },
               bgColor: Colors.white,
@@ -189,7 +188,76 @@ class _AuthenticationFormState extends State<AuthenticationForm> {
         child: ButtonMainTextIcon(
           callback: () async {
             if (_authBloc.validateFields()) {
-              registerUser();
+              // Show user pop up for display name
+              showDialog(
+                  context: context,
+                  builder:
+                      (BuildContext context) {
+                    return AlertDialog(
+                      title: Text(
+                          "Display Name"),
+                      content: Column(
+                        mainAxisSize:
+                        MainAxisSize.min,
+                        children: <Widget>[
+                          Text(
+                            'Please, tell us how would you like to be called',
+                            style: TextStyle(
+                                fontFamily:
+                                'Montserrat',
+                                fontWeight:
+                                FontWeight
+                                    .w500,
+                                fontSize: 15.0,
+                                color: Colors
+                                    .black45),
+                          ),
+                          SizedBox(height: 25.0,),
+                          StreamBuilder(
+                              stream: _authBloc.displayName,
+                              builder: (context, snapshot) {
+                                return InputTextMain(
+                                  fillColor: Colors.black12,
+                                  hintText: "Your Nickname",
+                                  errorText: snapshot.error,
+                                  onChanged: _authBloc.changeDisplayName,
+                                  textType: TextInputType.text,
+                                  height: 60.0,
+                                );
+                              }),
+                          Container(
+                              height: 45.0,
+                              padding: EdgeInsets.only(left: 10.0, right: 10.0),
+                              child: ButtonMainTextIcon(
+                                callback: () async {
+                                  if (_authBloc.validateAllFields()) {
+                                    registerUser();
+                                  } else {
+                                    showErrorMessage("Invalid Login Form");
+                                    Navigator.of(context).pop();
+                                  }
+                                },
+                                bgColor: Color(0xFF5D7EB6),
+                                paddingLeft: 0.0,
+                                paddingRight: 0.0,
+                                width: 120.0,
+                                text: "Confirm",
+                                textColor: Colors.white,
+                              ))
+                        ],
+                      ),
+                      actions: <Widget>[
+                        FlatButton(
+                          child: Text("Close"),
+                          onPressed: () {
+                            Navigator.of(
+                                context)
+                                .pop();
+                          },
+                        ),
+                      ],
+                    );
+                  });
             } else {
               showErrorMessage("Invalid Login Form");
             }

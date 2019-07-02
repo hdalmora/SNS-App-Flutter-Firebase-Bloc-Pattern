@@ -23,6 +23,11 @@ class AuthenticationResources {
     return user.isEmailVerified;
   }
 
+  Future<FirebaseUser> getCurrentUser() async {
+    final FirebaseUser user = await _firebaseAuth.currentUser();
+    return user;
+  }
+
   Future<String> getUserUID() async {
     final FirebaseUser user = await _firebaseAuth.currentUser();
     return user.uid;
@@ -83,10 +88,12 @@ class AuthenticationResources {
     }
   }
 
-  Future<int> signUpWithEmailAndPassword(String email, String password) async {
+  Future<int> signUpWithEmailAndPassword(String email, String password, String displayName) async {
     try {
       await _firebaseAuth.createUserWithEmailAndPassword(
           email: email, password: password);
+
+      await setUserDisplayName(displayName);
       return 1;
     } on PlatformException catch (e) {
       print(
@@ -98,6 +105,13 @@ class AuthenticationResources {
 
       return -2;
     }
+  }
+
+  Future<void> setUserDisplayName(String displayName) async {
+    final FirebaseUser user = await _firebaseAuth.currentUser();
+    UserUpdateInfo updateInfo = UserUpdateInfo();
+    updateInfo.displayName = displayName;
+    await user.updateProfile(updateInfo);
   }
 
   Future<int> sendEmailConfirmation() async {

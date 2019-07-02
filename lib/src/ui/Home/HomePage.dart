@@ -170,14 +170,22 @@ class _HomePageState extends State<HomePage> {
                             children: <Widget>[
                               Container(
                                 margin: EdgeInsets.only(right: 15.0),
-                                child: Text(
-                                  'teste@email.com',
-                                  style: TextStyle(
-                                      color: Color(0xFF204D9E),
-                                      fontFamily: 'Montserrat',
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 17.0),
-                                ),
+                                child:
+                                  FutureBuilder<FirebaseUser>(
+                                    future: _authBloc.getCurrentUser(),
+                                    builder: (contenxt, AsyncSnapshot<FirebaseUser> userSnapshot) {
+                                      if(userSnapshot.hasData) {
+                                        return Text(
+                                          userSnapshot.data.displayName,
+                                          style: TextStyle(
+                                              color: Color(0xFF204D9E),
+                                              fontFamily: 'Montserrat',
+                                              fontWeight: FontWeight.w600,
+                                              fontSize: 17.0),
+                                        );
+                                      }
+                                    }
+                                  )
                               ),
                             ],
                           ),

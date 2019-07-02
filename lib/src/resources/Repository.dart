@@ -13,6 +13,8 @@ class Repository {
 
   Future<String> getUserEmail() => _authResources.getUserEmail();
 
+  Future<FirebaseUser> getCurrentUser() => _authResources.getCurrentUser();
+
   Future<String> getUserUID() => _authResources.getUserUID();
 
   Future<bool> isUserAnonymous() => _authResources.isUserAnonymous();
@@ -28,7 +30,7 @@ class Repository {
 
   Future<int> signInWithEmailAndPassword(String email, String password) => _authResources.signInWithEmailAndPassword(email, password);
 
-  Future<int> signUpWithEmailAndPassword(String email, String password) => _authResources.signUpWithEmailAndPassword(email, password);
+  Future<int> signUpWithEmailAndPassword(String email, String password, String displayName) => _authResources.signUpWithEmailAndPassword(email, password, displayName);
 
   Future<int> sendEmailConfirmation() => _authResources.sendEmailConfirmation();
 
