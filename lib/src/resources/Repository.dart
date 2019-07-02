@@ -7,25 +7,32 @@ class Repository {
   final _firestoreResources = FirestoreProvider();
   final _authResources = AuthenticationResources();
 
+  Stream<FirebaseUser> getUserOnAuthState() => _authResources.onAuthStateChange;
+
   Future<FirebaseUser> getUserAuth() => _authResources.getUserAuth();
 
   Future<String> getUserEmail() => _authResources.getUserEmail();
 
+  Future<String> getUserUID() => _authResources.getUserUID();
+
   Future<bool> isUserAnonymous() => _authResources.isUserAnonymous();
 
-  Future<void> createUserProfile(String userID, String email, String name, String about, String arrivalOfJapan, String nationality, Map<String, String> languages, String industry) =>
+  Future<bool> isUserEmailVerified() => _authResources.isUserEmailVerified();
+
+  Future<void> createUserProfile(String userID, String email, String name, String about, DateTime arrivalOfJapan, String nationality, Map<String, String> languages, String industry) =>
       _firestoreResources.createUserProfile(userID, email, name, about, arrivalOfJapan, nationality, languages, industry);
 
   Stream<DocumentSnapshot> getUserData(String documentID) => _firestoreResources.getUserData(documentID);
 
   Future<void> signInAnonymously() => _authResources.signInAnonymously();
 
-
   Future<int> signInWithEmailAndPassword(String email, String password) => _authResources.signInWithEmailAndPassword(email, password);
-
 
   Future<int> signUpWithEmailAndPassword(String email, String password) => _authResources.signUpWithEmailAndPassword(email, password);
 
+  Future<int> sendEmailConfirmation() => _authResources.sendEmailConfirmation();
+
+  Future<void> signInWithGoogle() => _authResources.signWithGoogle();
 
   Future<void> signOut() => _authResources.signOut;
 

@@ -1,10 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:buddies_osaka/src/models/BlogModel.dart';
 
 class FirestoreProvider {
   Firestore _firestore = Firestore.instance;
 
-  Future<void> createUserProfile(String userID, String email, String name, String about, String arrivalOfJapan, String nationality, Map<String, String> languages, String industry) async
+  Future<void> createUserProfile(String userID, String email, String name, String about, DateTime arrivalOfJapan, String nationality, Map<String, String> languages, String industry) async
     => _firestore
         .collection("users")
         .document(userID)

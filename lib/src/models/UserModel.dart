@@ -4,7 +4,7 @@ class UserModel {
   final String id;
   final String name;
   final String image;
-  final String arrivalOfJapan;
+  final Timestamp arrivalOfJapan;
   final String eMail;
   final String industry;
   final String about;

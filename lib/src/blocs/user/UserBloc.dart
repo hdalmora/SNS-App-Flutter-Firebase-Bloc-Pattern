@@ -10,7 +10,7 @@ class UserBloc {
   final _name = BehaviorSubject<String>();
   final _about = BehaviorSubject<String>();
   final _nationality = BehaviorSubject<String>();
-  final _dateOfArrival = BehaviorSubject<String>();
+  final _dateOfArrival = BehaviorSubject<DateTime>();
   final _industry = BehaviorSubject<String>();
   final _languages = BehaviorSubject<Map<String, String>>();
   final _isSubmitted = BehaviorSubject<bool>();
@@ -21,7 +21,7 @@ class UserBloc {
 
   Observable<String> get nationality => _nationality.stream.transform(_validateAbout);
 
-  Observable<String> get dateOfArrival => _dateOfArrival.stream.transform(_validateDate);
+  Observable<DateTime> get dateOfArrival => _dateOfArrival.stream.transform(_validateDate);
 
   Observable<String> get industry => _industry.stream.transform(_validateIndustry);
 
@@ -46,8 +46,8 @@ class UserBloc {
   });
 
   final _validateDate =
-      StreamTransformer<String, String>.fromHandlers(handleData: (date, sink) {
-    if (date.length > 9) {
+      StreamTransformer<DateTime, DateTime>.fromHandlers(handleData: (date, sink) {
+    if (date != null) {
       sink.add(date);
     } else {
       sink.addError("You must pick a date of arrival in Japan.");
@@ -83,7 +83,7 @@ class UserBloc {
 
   Function(String) get changeNationality => _nationality.sink.add;
 
-  Function(String) get changeDate => _dateOfArrival.sink.add;
+  Function(DateTime) get changeDate => _dateOfArrival.sink.add;
 
   Function(String) get changeIndustry => _industry.sink.add;
 
@@ -96,15 +96,11 @@ class UserBloc {
     _repository.createUserProfile(user.uid, user.email, _name.value, _about.value, _dateOfArrival.value, _nationality.value, _languages.value, _industry.value);
   }
 
-  Future<bool> isAnonym() async {
-    FirebaseUser user = await _repository.getUserAuth();
-    return user.isAnonymous;
-  }
+  Future<bool> isAnonym() async => _repository.isUserAnonymous();
 
-  Future<String> getUserUID() async {
-    FirebaseUser user = await _repository.getUserAuth();
-    return user.uid;
-  }
+  Future<bool> isEmailConfirmed() async => _repository.isUserEmailVerified();
+
+  Future<String> getUserUID() async => _repository.getUserUID();
 
   Stream<DocumentSnapshot> getUserData(String documentID) => _repository.getUserData(documentID);
 
@@ -131,10 +127,9 @@ class UserBloc {
         _about.value != null &&
         _about.value.isNotEmpty &&
         _dateOfArrival.value != null &&
-        _dateOfArrival.value.isNotEmpty &&
+        _dateOfArrival.value != null &&
         _name.value.length > 5 &&
         _about.value.length > 11 &&
-        _dateOfArrival.value.length > 9 &&
         _languages.value.isNotEmpty &&
         _industry.value.isNotEmpty) {
       return true;

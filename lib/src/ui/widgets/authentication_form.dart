@@ -166,6 +166,7 @@ class _AuthenticationFormState extends State<AuthenticationForm> {
             child: ButtonMainTextIcon(
               callback: () async {
                 //TODO: Insert google SignIn in Auth Bloc
+                _authBloc.authenticateWithGoogle();
               },
               bgColor: Colors.white,
               width: 170.0,
@@ -244,6 +245,8 @@ class _AuthenticationFormState extends State<AuthenticationForm> {
     _authBloc.showProgressBar(true);
 
     int response = await _authBloc.registerUser();
+
+    await _authBloc.sendEmailConfirmation();
 
     _authBloc.showProgressBar(false);
     if (response < 0) {

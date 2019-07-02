@@ -3,6 +3,7 @@ import 'package:buddies_osaka/src/utils/Strings.dart';
 import 'package:buddies_osaka/src/utils/Validator.dart';
 import 'package:buddies_osaka/src/resources/Repository.dart';
 import 'package:rxdart/rxdart.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class AuthenticationBloc {
   final _repository = Repository();
@@ -45,6 +46,8 @@ class AuthenticationBloc {
     }
   });
 
+  Stream<FirebaseUser> onUserAuthChange() => _repository.getUserOnAuthState();
+
   Future<void> signInUserAnonymously() {
     return _repository.signInAnonymously();
   }
@@ -58,6 +61,10 @@ class AuthenticationBloc {
     return _repository.signUpWithEmailAndPassword(
         _email.value, _password.value);
   }
+
+  Future<int> sendEmailConfirmation() => _repository.sendEmailConfirmation();
+
+  Future<void> authenticateWithGoogle() => _repository.signInWithGoogle();
 
   Future<void> signOut() => _repository.signOut();
 

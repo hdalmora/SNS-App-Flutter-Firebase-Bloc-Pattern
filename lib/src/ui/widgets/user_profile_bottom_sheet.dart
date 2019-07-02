@@ -46,7 +46,7 @@ class _UserProfileBottomSheetState extends State<UserProfileBottomSheet>
 
   AnimationController _controller;
 
-  double get maxHeight => MediaQuery.of(context).size.height - 80;
+  double get maxHeight => MediaQuery.of(context).size.height - 0.55*MediaQuery.of(context).size.height;
 
   double get headerTopMargin =>
       lerp(20, 20 + MediaQuery.of(context).padding.top);

@@ -16,6 +16,13 @@ class AuthenticationResources {
     return user.isAnonymous;
   }
 
+  Future<bool> isUserEmailVerified() async {
+    final FirebaseUser user = await _firebaseAuth.currentUser();
+    await user.reload();
+
+    return user.isEmailVerified;
+  }
+
   Future<String> getUserUID() async {
     final FirebaseUser user = await _firebaseAuth.currentUser();
     return user.uid;
@@ -88,6 +95,25 @@ class AuthenticationResources {
       return -1;
     } catch (e) {
       print("Exception: Authentication: " + e.toString());
+
+      return -2;
+    }
+  }
+
+  Future<int> sendEmailConfirmation() async {
+    try {
+      FirebaseUser user = await _firebaseAuth.currentUser();
+
+      await user.sendEmailVerification();
+
+      return 1;
+    } on PlatformException catch(e) {
+      print(
+          "Platform Exception: Authentication: " +
+              e.toString());
+      return -1;
+    } catch (e) {
+      print("Exception: Send Email Verify: " + e.toString());
 
       return -2;
     }

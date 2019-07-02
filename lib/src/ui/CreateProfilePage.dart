@@ -340,7 +340,7 @@ class _CreateProfilePageState extends State<CreateProfilePage> {
                           top: 15.0, left: 20.0, right: 20.0, bottom: 15.0),
                       child: StreamBuilder(
                           stream: _userBloc.dateOfArrival,
-                          builder: (context, AsyncSnapshot<String> snapshot) {
+                          builder: (context, AsyncSnapshot<DateTime> snapshot) {
                             return Row(
                               children: <Widget>[
                                 Flexible(
@@ -361,7 +361,7 @@ class _CreateProfilePageState extends State<CreateProfilePage> {
                                                   lastDate: new DateTime(2020));
                                           if (picked != null) {
                                             _userBloc
-                                                .changeDate(picked.toString());
+                                                .changeDate(picked);
                                             setState(() {
                                               this._datePicked =
                                                   picked.toString();
