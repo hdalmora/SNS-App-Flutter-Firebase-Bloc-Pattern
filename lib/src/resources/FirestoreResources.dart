@@ -19,7 +19,6 @@ class FirestoreProvider {
           'role': "Registered User",
         });
 
-
   Future<void> postBlog(String userUID, String userEmail, String title, String content) async => _firestore
         .collection("blogs")
         .document()
@@ -32,6 +31,26 @@ class FirestoreProvider {
           'timestamp': FieldValue.serverTimestamp()
         }));
 
+  Future<void> postUserCommentToBlog(String userUID, String blogUID, String userEmail, String userName, String comment) async =>
+    _firestore.collection("blogs")
+      .document(blogUID)
+      .collection("comments")
+      .document()
+      .setData(({
+        'userID': userUID,
+        'blogID': blogUID,
+        'userEmail': userEmail,
+        'userName': userName,
+        'comment': comment,
+        'dateCreated': FieldValue.serverTimestamp()
+      }));
+
+  Stream<QuerySnapshot> blogCommentsList(int limit, String blogUID) => _firestore
+      .collection("blogs")
+      .document(blogUID)
+      .collection("comments")
+      .orderBy("dateCreated", descending: true)
+      .snapshots();
 
   Future<void> likeBlogPost(String blogUID, String userUID) async => _firestore
       .collection("blogLikes")

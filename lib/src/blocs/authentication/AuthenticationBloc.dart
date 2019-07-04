@@ -62,19 +62,16 @@ class AuthenticationBloc {
 
   Stream<FirebaseUser> onUserAuthChange() => _repository.getUserOnAuthState();
 
-  Future<void> signInUserAnonymously() {
-    return _repository.signInAnonymously();
-  }
+  Future<void> signInUserAnonymously() => _repository.signInAnonymously();
 
-  Future<int> signInUser() {
-    return _repository.signInWithEmailAndPassword(
-        _email.value, _password.value);
-  }
+  Future<int> signInUser() => _repository.signInWithEmailAndPassword(_email.value, _password.value);
 
-  Future<int> registerUser() {
-    return _repository.signUpWithEmailAndPassword(
-        _email.value, _password.value, _displayName.value);
-  }
+
+  Future<int> registerUser() => _repository.signUpWithEmailAndPassword(_email.value, _password.value, _displayName.value);
+
+  Future<int> upgradeUserAccount() => _repository.upgradeAnonymAccountWithEmail(_email.value, _password.value, _displayName.value);
+
+  Future<int> upgradeUserAccountWithGoogle() => _repository.upgradeAnonymAccountWithGoogle();
 
   Future<FirebaseUser> getCurrentUser() => _repository.getCurrentUser();
 

@@ -22,6 +22,11 @@ service cloud.firestore {
 
     }
 
+    match /blogs/{blogId}/comments/{commentId} {
+        allow read;
+        allow create: if isSignedIn();
+    }
+
     match /users/{userId} {
         allow read, create: if isSignedIn();
         allow update: if isSignedIn() && userId == request.auth.uid;

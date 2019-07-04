@@ -11,11 +11,19 @@ class BlogBloc {
   final _repository = Repository();
   final _title = BehaviorSubject<String>();
   final _content = BehaviorSubject<String>();
+
+  final _comment = BehaviorSubject<String>();
+
   final _isSubmitted = BehaviorSubject<bool>();
+  final _userHasPermission = BehaviorSubject<bool>();
 
   Observable<String> get title => _title.stream.transform(_validateTitle);
 
   Observable<String> get content => _content.stream.transform(_validateContent);
+
+  Observable<String> get comment => _comment.stream.transform(_validateComment);
+
+  Observable<bool> get userHasPermission => _userHasPermission.stream;
 
   Observable<bool> get submissionStatus => _isSubmitted.stream;
 
@@ -23,6 +31,10 @@ class BlogBloc {
   Function(String) get changeTitle => _title.sink.add;
 
   Function(String) get changeContent => _content.sink.add;
+
+  Function(String) get changeComment => _comment.sink.add;
+
+  Function(bool) get setUserPermission => _userHasPermission.sink.add;
 
   Function(bool) get showProgressBar => _isSubmitted.sink.add;
 
@@ -44,11 +56,24 @@ class BlogBloc {
         }
       });
 
+  final _validateComment = StreamTransformer<String, String>.fromHandlers(
+      handleData: (content, sink) {
+        if (content.length > 14) {
+          sink.add(content);
+        } else {
+          sink.addError("Comment must have at least " + content.length.toString() + "/15 characters");
+        }
+      });
+
   void dispose() async {
     await _title.drain();
     _title.close();
     await _content.drain();
     _content.close();
+    await _comment.drain();
+    _comment.close();
+    await _userHasPermission.drain();
+    _userHasPermission.close();
     await _isSubmitted.drain();
     _isSubmitted.close();
   }
@@ -65,9 +90,24 @@ class BlogBloc {
       return false;
     }
   }
+
+  bool validateComment() {
+    if(_comment.value != null &&
+       _comment.value.isNotEmpty &&
+       _comment.value.length > 14) {
+      return true;
+    }
+    return false;
+  }
+
   Future<String> getUserUID() async {
     FirebaseUser user = await _repository.getUserAuth();
     return user.uid;
+  }
+
+  Future<String> getUserDisplayNAme() async {
+    FirebaseUser user = await _repository.getUserAuth();
+    return user.providerData[0].displayName;
   }
 
   Future<String> getUserEmail() async {
@@ -82,6 +122,26 @@ class BlogBloc {
       await _repository.postBlog(uid, email, _title.value, _content.value);
       _isSubmitted.sink.add(false);
   }
+
+  Future<bool> userAccessPermission(bool profileCreated) async {
+    FirebaseUser user = await _repository.getCurrentUser();
+
+    if(user.isAnonymous || !user.isEmailVerified || !profileCreated)
+      return false;
+    return true;
+  }
+
+  Future<void> postComment(String blogUID) async {
+    _isSubmitted.sink.add(true);
+    String userUID = await getUserUID();
+    String userEmail = await getUserEmail();
+    String userDisplayName = await getUserDisplayNAme();
+
+    await _repository.postUserCommentToBlog(userUID, blogUID, userEmail, userDisplayName, _comment.value);
+    _isSubmitted.sink.add(false);
+  }
+
+  Stream<QuerySnapshot> commentsList(int limit, String blogUID) => _repository.commentsList(limit, blogUID);
 
   Stream<QuerySnapshot> blogsList(int limit) => _repository.blogsList(limit);
 

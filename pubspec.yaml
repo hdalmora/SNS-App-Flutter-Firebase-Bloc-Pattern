@@ -58,6 +58,7 @@ flutter:
     - assets/images/efe-kurnaz.jpg
     - assets/images/rodion-kutsaev.jpeg
     - assets/images/steve-johnson.jpeg
+    - assets/images/blog-image-placeholder.jpg
 
   fonts:
     - family: SF Pro Display

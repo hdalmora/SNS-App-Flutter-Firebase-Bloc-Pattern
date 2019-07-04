@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:buddies_osaka/src/models/UserModel.dart';
 import 'package:buddies_osaka/src/blocs/user/UserBlocProvider.dart';
+import 'package:buddies_osaka/src/blocs/blogs/BlogBlocProvider.dart';
 import 'package:buddies_osaka/src/blocs/user/UserBloc.dart';
 import 'package:buddies_osaka/src/ui/Home/Blogs/Blogs.dart';
 import 'package:buddies_osaka/src/ui/Home/Questions/Questions.dart';
@@ -15,6 +16,8 @@ import 'package:buddies_osaka/src/ui/MembersPage.dart';
 import 'package:buddies_osaka/src/blocs/authentication/AuthenticationBloc.dart';
 import 'package:buddies_osaka/src/blocs/authentication/AuthenticationBlocProvider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:buddies_osaka/src/components/input-text-main.dart';
+import 'package:buddies_osaka/src/components/button-main-text-icon.dart';
 
 class HomePage extends StatefulWidget {
   static const String routeName = 'home_screen';
@@ -32,6 +35,7 @@ class _HomePageState extends State<HomePage> {
   final Duration delay = Duration(milliseconds: 50);
 
   UserBloc _userBloc;
+  BlogBloc _blogBloc;
   UserModel _user;
 
   AuthenticationBloc _authBloc;
@@ -48,17 +52,20 @@ class _HomePageState extends State<HomePage> {
     super.didChangeDependencies();
     _userBloc = UserBlocProvider.of(context);
     _authBloc = AuthenticationBlocProvider.of(context);
+    _blogBloc = BlogBlocProvider.of(context);
   }
 
   @override
   void initState() {
     super.initState();
     _pageController = PageController();
+
   }
 
   @override
   void dispose() {
     _userBloc.dispose();
+    _blogBloc.dispose();
     _authBloc.dispose();
     _pageController.dispose();
     super.dispose();
@@ -73,6 +80,12 @@ class _HomePageState extends State<HomePage> {
   void navigationTapped(int page) {
     _pageController.animateToPage(page,
         duration: const Duration(milliseconds: 300), curve: Curves.ease);
+  }
+
+  void showErrorMessage(String message) {
+    final snackbar =
+        SnackBar(content: Text(message), duration: new Duration(seconds: 2));
+    _scaffoldKey.currentState.showSnackBar(snackbar);
   }
 
   void selectTabBar(String tab) {
@@ -169,24 +182,34 @@ class _HomePageState extends State<HomePage> {
                             mainAxisAlignment: MainAxisAlignment.start,
                             children: <Widget>[
                               Container(
-                                margin: EdgeInsets.only(right: 15.0),
-                                child:
-                                  FutureBuilder<FirebaseUser>(
-                                    future: _authBloc.getCurrentUser(),
-                                    builder: (contenxt, AsyncSnapshot<FirebaseUser> userSnapshot) {
-                                      if(userSnapshot.hasData) {
-                                        return Text(
-                                          userSnapshot.data.displayName,
-                                          style: TextStyle(
-                                              color: Color(0xFF204D9E),
-                                              fontFamily: 'Montserrat',
-                                              fontWeight: FontWeight.w600,
-                                              fontSize: 17.0),
-                                        );
-                                      }
-                                    }
-                                  )
-                              ),
+                                  margin: EdgeInsets.only(right: 15.0),
+                                  child: StreamBuilder<FirebaseUser>(
+                                      stream: _authBloc.onUserAuthChange(),
+                                      builder: (contenxt,
+                                          AsyncSnapshot<FirebaseUser>
+                                              userSnapshot) {
+                                        if (userSnapshot.hasData) {
+                                          if (userSnapshot.data.providerData[0].displayName != null) {
+                                            return Text(
+                                              userSnapshot.data.providerData[0].displayName,
+                                              style: TextStyle(
+                                                  color: Color(0xFF204D9E),
+                                                  fontFamily: 'Montserrat',
+                                                  fontWeight: FontWeight.w600,
+                                                  fontSize: 17.0),
+                                            );
+                                          } else {
+                                            return Text(
+                                              "Guest user",
+                                              style: TextStyle(
+                                                  color: Color(0xFF204D9E),
+                                                  fontFamily: 'Montserrat',
+                                                  fontWeight: FontWeight.w600,
+                                                  fontSize: 17.0),
+                                            );
+                                          }
+                                        }
+                                      })),
                             ],
                           ),
                         ),
@@ -259,15 +282,25 @@ class _HomePageState extends State<HomePage> {
                         ],
                       ),
                     ),
-                    Flexible(
-                      flex: 10,
-                      child: PageView(
-                        physics: NeverScrollableScrollPhysics(),
-                        children: [Blogs(), Events(), Questions()],
-                        onPageChanged: onPageChanged,
-                        controller: _pageController,
-                      ),
-                    ),
+                    StreamBuilder(
+                      stream: _blogBloc.userHasPermission,
+                      builder: (context, created) {
+                        if(created.hasData) {
+                          print("Created data: ${created.data.toString()}");
+                          return Flexible(
+                            flex: 10,
+                            child: PageView(
+                              physics: NeverScrollableScrollPhysics(),
+                              children: [Blogs(createdProfile: created.data,), Events(), Questions()],
+                              onPageChanged: onPageChanged,
+                              controller: _pageController,
+                            ),
+                          );
+                        } else {
+                          return Container();
+                        }
+                      },
+                    )
                   ],
                 ),
                 StreamBuilder<FirebaseUser>(
@@ -276,6 +309,8 @@ class _HomePageState extends State<HomePage> {
                     if (userSnapshot.hasData) {
                       if (userSnapshot.data.isAnonymous) {
                         // ANONYM USER -- SHOW ANONYM SHEET
+
+                        _blogBloc.setUserPermission(false);
 
                         return Positioned(
                           height: 160,
@@ -310,7 +345,7 @@ class _HomePageState extends State<HomePage> {
                                       height: 5.0,
                                     ),
                                     Text(
-                                      'You are logged in as an Anonymous user. To access all our community contents, please',
+                                      'You are logged in as an Guest. To access all our community contents, please',
                                       style: TextStyle(
                                           fontFamily: 'Montserrat',
                                           fontWeight: FontWeight.bold,
@@ -324,17 +359,217 @@ class _HomePageState extends State<HomePage> {
                                       alignment: Alignment.bottomCenter,
                                       child: InkWell(
                                         onTap: () {
-//                                        Route route =
-//                                        MaterialPageRoute(
-//                                            builder:
-//                                                (context) =>
-//                                                CreateProfilePage(
-//                                                  userUID:
-//                                                  userDocId.data,
-//                                                ));
-//
-//                                        Navigator.push(
-//                                            context, route);
+                                          showDialog(
+                                              context: context,
+                                              builder: (BuildContext contextc) {
+                                                return AlertDialog(
+                                                  title:
+                                                      Text("Upgrade Account"),
+                                                  content: Column(
+                                                    mainAxisSize:
+                                                        MainAxisSize.min,
+                                                    children: <Widget>[
+                                                      Text(
+                                                        'Be a part of our community!',
+                                                        style: TextStyle(
+                                                            fontFamily:
+                                                                'Montserrat',
+                                                            fontWeight:
+                                                                FontWeight.w500,
+                                                            fontSize: 15.0,
+                                                            color:
+                                                                Colors.black45),
+                                                      ),
+                                                      SizedBox(
+                                                        height: 25.0,
+                                                      ),
+                                                      StreamBuilder(
+                                                          stream: _authBloc
+                                                              .displayName,
+                                                          builder: (context,
+                                                              snapshot) {
+                                                            return InputTextMain(
+                                                              fillColor: Color(
+                                                                      0xD3D3D3)
+                                                                  .withAlpha(
+                                                                      50),
+                                                              hintText:
+                                                                  "Nickname...",
+                                                              errorText:
+                                                                  snapshot
+                                                                      .error,
+                                                              onChanged: _authBloc
+                                                                  .changeDisplayName,
+                                                              textType:
+                                                                  TextInputType
+                                                                      .text,
+                                                              height: 60.0,
+                                                            );
+                                                          }),
+                                                      StreamBuilder(
+                                                          stream:
+                                                              _authBloc.email,
+                                                          builder: (contextc,
+                                                              snapshot) {
+                                                            return InputTextMain(
+                                                              fillColor: Color(
+                                                                      0xD3D3D3)
+                                                                  .withAlpha(
+                                                                      50),
+                                                              hintText:
+                                                                  "Email...",
+                                                              errorText:
+                                                                  snapshot
+                                                                      .error,
+                                                              onChanged: _authBloc
+                                                                  .changeEmail,
+                                                              textType:
+                                                                  TextInputType
+                                                                      .text,
+                                                              height: 60.0,
+                                                            );
+                                                          }),
+                                                      StreamBuilder(
+                                                          stream: _authBloc
+                                                              .password,
+                                                          builder: (context,
+                                                              snapshot) {
+                                                            return InputTextMain(
+                                                              fillColor: Color(
+                                                                      0xD3D3D3)
+                                                                  .withAlpha(
+                                                                      50),
+                                                              hintText:
+                                                                  "Password...",
+                                                              errorText:
+                                                                  snapshot
+                                                                      .error,
+                                                              onChanged: _authBloc
+                                                                  .changePassword,
+                                                              textType:
+                                                                  TextInputType
+                                                                      .text,
+                                                              height: 60.0,
+                                                            );
+                                                          }),
+                                                      StreamBuilder(
+                                                          stream: _authBloc
+                                                              .signInStatus,
+                                                          builder: (BuildContext
+                                                                  context,
+                                                              AsyncSnapshot<
+                                                                      bool>
+                                                                  snapshot) {
+                                                            if (!snapshot.hasData ||
+                                                                snapshot
+                                                                    .hasError ||
+                                                                !snapshot
+                                                                    .data) {
+                                                              return Container(
+                                                                child: Column(
+                                                                  children: <
+                                                                      Widget>[
+                                                                    Container(
+                                                                        height:
+                                                                            45.0,
+                                                                        padding: EdgeInsets.only(
+                                                                            left:
+                                                                                10.0,
+                                                                            right:
+                                                                                10.0),
+                                                                        child:
+                                                                            ButtonMainTextIcon(
+                                                                          callback:
+                                                                              () async {
+                                                                            if (_authBloc.validateAllFields()) {
+                                                                              _authBloc.showProgressBar(true);
+
+                                                                              int response = await _authBloc.upgradeUserAccount();
+
+                                                                              if (response < 0) {
+                                                                                showErrorMessage("Could not register user. Maybe e-mail is already been taken");
+                                                                              } else {
+                                                                                await _authBloc.sendEmailConfirmation();
+                                                                              }
+                                                                              _authBloc.showProgressBar(false);
+                                                                              Navigator.of(contextc).pop();
+                                                                            } else {
+                                                                              showErrorMessage("Invalid Form");
+                                                                              Navigator.of(contextc).pop();
+                                                                            }
+                                                                          },
+                                                                          bgColor:
+                                                                              Color(0xFF5D7EB6),
+                                                                          paddingLeft:
+                                                                              0.0,
+                                                                          paddingRight:
+                                                                              0.0,
+                                                                          text:
+                                                                              "UPGRADE",
+                                                                          textColor:
+                                                                              Colors.white,
+                                                                        )),
+                                                                    Container(
+                                                                      margin: EdgeInsets
+                                                                          .only(
+                                                                              top: 15.0),
+                                                                      alignment:
+                                                                          Alignment
+                                                                              .bottomCenter,
+                                                                      child:
+                                                                          Builder(
+                                                                        builder: (contextc) => Container(
+                                                                            height: 45.0,
+                                                                            child: ButtonMainTextIcon(
+                                                                              callback: () async {
+                                                                                Navigator.of(contextc).pop();
+                                                                                _authBloc.showProgressBar(true);
+                                                                                int response = await _authBloc.upgradeUserAccountWithGoogle();
+                                                                                if(response < 0) {
+                                                                                  showErrorMessage("This Google account is already in use");
+                                                                                }
+                                                                                _authBloc.showProgressBar(false);
+                                                                                setState(() {
+                                                                                });
+                                                                              },
+                                                                              bgColor: Colors.white,
+                                                                              width: 170.0,
+                                                                              paddingLeft: 0.0,
+                                                                              imageSize: 25.0,
+                                                                              paddingRight: 0.0,
+                                                                              iconImagePath: 'assets/images/google_logo_g_transparent.png',
+                                                                              text: "Sign In",
+                                                                              textColor: Color(0xFF5D7EB6),
+                                                                              spaceBetweenImageAndText: 10.0,
+                                                                            )),
+                                                                      ),
+                                                                    )
+                                                                  ],
+                                                                ),
+                                                              );
+                                                            } else {
+                                                              return Center(
+                                                                  child:
+                                                                      CircularProgressIndicator(
+                                                                backgroundColor:
+                                                                    Colors
+                                                                        .white,
+                                                              ));
+                                                            }
+                                                          })
+                                                    ],
+                                                  ),
+                                                  actions: <Widget>[
+                                                    FlatButton(
+                                                      child: Text("Close"),
+                                                      onPressed: () {
+                                                        Navigator.of(context)
+                                                            .pop();
+                                                      },
+                                                    ),
+                                                  ],
+                                                );
+                                              });
                                         },
                                         child: Text(
                                           'UPGRADE ACCOUNT',
@@ -357,6 +592,8 @@ class _HomePageState extends State<HomePage> {
 
                         if (!userSnapshot.data.isEmailVerified) {
                           // EMAIL NOT VERIFIED -- SHOW EMAIL CONFIRMATION SHEET
+
+                          _blogBloc.setUserPermission(false);
 
                           return Positioned(
                             height: 160,
@@ -414,8 +651,7 @@ class _HomePageState extends State<HomePage> {
 
                                             if (verified) {
                                               //Show confirmation message
-                                              setState(() {
-                                              });
+                                              setState(() {});
                                               print(
                                                   "User already confirmed email");
                                             } else {
@@ -444,7 +680,6 @@ class _HomePageState extends State<HomePage> {
                                                           ),
                                                           InkWell(
                                                             onTap: () {
-
                                                               _authBloc
                                                                   .sendEmailConfirmation();
                                                             },
@@ -534,6 +769,8 @@ class _HomePageState extends State<HomePage> {
                         } else {
                           // EMAIL VERIFIED -- SHOW USER DETAILS
 
+                          _blogBloc.setUserPermission(false);
+
                           return StreamBuilder<DocumentSnapshot>(
                             stream:
                                 _userBloc.getUserData(userSnapshot.data.uid),
@@ -544,6 +781,9 @@ class _HomePageState extends State<HomePage> {
                                   /// MEMBER USER ---------------------------------
                                   /// PROFILE NOT YET CREATED
                                   ///
+
+                                  _blogBloc.setUserPermission(false);
+
                                   return Positioned(
                                     height: 160,
                                     left: 0,
@@ -555,7 +795,7 @@ class _HomePageState extends State<HomePage> {
                                       decoration: const BoxDecoration(
                                         color: Color(0xFF162A49),
                                         borderRadius: BorderRadius.vertical(
-                                            top: Radius.circular(32)),
+                                           top: Radius.circular(32)),
                                       ),
                                       child: Stack(
                                         children: <Widget>[
@@ -568,12 +808,12 @@ class _HomePageState extends State<HomePage> {
                                                   CrossAxisAlignment.start,
                                               children: <Widget>[
                                                 Text(
-                                                  'Hello!',
+                                                  "Hello, ${userSnapshot.data.providerData[0].displayName}",
                                                   style: TextStyle(
                                                       fontFamily: 'Montserrat',
                                                       fontWeight:
                                                           FontWeight.bold,
-                                                      fontSize: 30.0,
+                                                      fontSize: 23.0,
                                                       color: Colors.white),
                                                 ),
                                                 Text(
@@ -582,7 +822,7 @@ class _HomePageState extends State<HomePage> {
                                                       fontFamily: 'Montserrat',
                                                       fontWeight:
                                                           FontWeight.bold,
-                                                      fontSize: 16.0,
+                                                      fontSize: 15.0,
                                                       color: Colors.white),
                                                 ),
                                                 SizedBox(
@@ -629,6 +869,9 @@ class _HomePageState extends State<HomePage> {
                                   /// MEMBER USER ---------------------------------
                                   /// PROFILE ALREADY CREATED
                                   ///
+
+                                  _blogBloc.setUserPermission(true);
+
                                   _user = UserModel.fromDocument(snapshot.data);
                                   return Container(
                                     child: Stack(

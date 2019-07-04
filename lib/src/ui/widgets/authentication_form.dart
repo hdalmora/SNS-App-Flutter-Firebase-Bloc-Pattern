@@ -165,7 +165,9 @@ class _AuthenticationFormState extends State<AuthenticationForm> {
             height: 45.0,
             child: ButtonMainTextIcon(
               callback: () async {
-                _authBloc.authenticateWithGoogle();
+                _authBloc.showProgressBar(true);
+                await _authBloc.authenticateWithGoogle();
+                _authBloc.showProgressBar(false);
               },
               bgColor: Colors.white,
               width: 170.0,
@@ -217,7 +219,7 @@ class _AuthenticationFormState extends State<AuthenticationForm> {
                               stream: _authBloc.displayName,
                               builder: (context, snapshot) {
                                 return InputTextMain(
-                                  fillColor: Colors.black12,
+                                  fillColor: Color(0xD3D3D3).withAlpha(50),
                                   hintText: "Your Nickname",
                                   errorText: snapshot.error,
                                   onChanged: _authBloc.changeDisplayName,
@@ -231,6 +233,7 @@ class _AuthenticationFormState extends State<AuthenticationForm> {
                               child: ButtonMainTextIcon(
                                 callback: () async {
                                   if (_authBloc.validateAllFields()) {
+                                    Navigator.of(context).pop();
                                     registerUser();
                                   } else {
                                     showErrorMessage("Invalid Login Form");
@@ -314,13 +317,13 @@ class _AuthenticationFormState extends State<AuthenticationForm> {
 
     int response = await _authBloc.registerUser();
 
-    await _authBloc.sendEmailConfirmation();
-
-    _authBloc.showProgressBar(false);
     if (response < 0) {
       showErrorMessage(
           "Could not register user. Maybe e-mail is already been taken");
+    } else {
+      await _authBloc.sendEmailConfirmation();
     }
+    _authBloc.showProgressBar(false);
   }
 
   @override

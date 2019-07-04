@@ -5,14 +5,27 @@ import 'package:buddies_osaka/src/blocs/blogs/BlogBloc.dart';
 import 'package:buddies_osaka/src/blocs/blogs/BlogBlocProvider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:buddies_osaka/src/models/BlogModel.dart';
+import 'package:buddies_osaka/src/ui/Home/Blogs/BlogPage.dart';
 import 'dart:async';
 
 class BlogsSlidingCardsView extends StatefulWidget {
+
+  final bool createdProfile;
+
+  const BlogsSlidingCardsView({Key key, this.createdProfile}): super(key: key);
+
   @override
-  _BlogsSlidingCardsViewState createState() => _BlogsSlidingCardsViewState();
+  _BlogsSlidingCardsViewState createState() => _BlogsSlidingCardsViewState(this.createdProfile);
 }
 
 class _BlogsSlidingCardsViewState extends State<BlogsSlidingCardsView> {
+  bool createdProfile;
+
+  _BlogsSlidingCardsViewState(bool createdProfile) {
+    this.createdProfile = createdProfile;
+  }
+
+
   PageController pageController;
 
   double pageOffset = 0;
@@ -23,6 +36,19 @@ class _BlogsSlidingCardsViewState extends State<BlogsSlidingCardsView> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     _blogBloc = BlogBlocProvider.of(context);
+  }
+
+  @override
+  void didUpdateWidget(BlogsSlidingCardsView oldWidget) {
+    // TODO: implement didUpdateWidget
+
+    if(this.createdProfile != widget.createdProfile) {
+      setState(() {
+        this.createdProfile = widget.createdProfile;
+      });
+    }
+
+    super.didUpdateWidget(oldWidget);
   }
 
   @override
@@ -52,7 +78,7 @@ class _BlogsSlidingCardsViewState extends State<BlogsSlidingCardsView> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
-      height: MediaQuery.of(context).size.height * 0.3,
+      height: MediaQuery.of(context).size.height * 0.32,
       child: StreamBuilder(
           stream: _blogBloc.blogsList(3),
           builder:
@@ -74,20 +100,46 @@ class _BlogsSlidingCardsViewState extends State<BlogsSlidingCardsView> {
                       itemBuilder: (context, position) {
                         DateTime date = DateTime.fromMicrosecondsSinceEpoch(
                             blogsList[position].date.microsecondsSinceEpoch);
+                        String dateS = date.month.toString() +
+                            "/" +
+                            date.day.toString() +
+                            "/" +
+                            date.year.toString();
                         return SlidingCard(
                           title: blogsList[position].title,
                           content: blogsList[position].content,
                           author: blogsList[position].authorEmail,
-                          date: date.month.toString() +
-                              "/" +
-                              date.day.toString() +
-                              "/" +
-                              date.year.toString(),
+                          date: dateS,
                           likes: blogsList[position].likesCounter.toString(),
                           offset: pageOffset - position,
                           alreadyLiked:
                               _blogBloc.hasLikedBlog(blogsList[position].id),
-                          callback: () {},
+                          callback: () async {
+
+                            bool permission = await _blogBloc.userAccessPermission(this.createdProfile);
+
+                            print("TITLE BEFOER: ${blogsList[position].title}");
+
+
+                            if(permission) {
+                              print("User haves permission");
+                              Navigator.push(
+                                  context,
+                                  new MaterialPageRoute(
+                                      builder: (BuildContext context) =>
+                                          BLogPage(
+                                            title: blogsList[position].title,
+                                            author: blogsList[position].authorEmail,
+                                            dateCreated: dateS,
+                                            content: blogsList[position].content,
+                                            blogUID: blogsList[position].id,
+                                          )));
+                            } else {
+                              print("User Doesnt have permission");
+                            }
+
+
+                          },
                           onLikePressed: () async {
                             _likeBlog(blogsList[position].id);
                           },
