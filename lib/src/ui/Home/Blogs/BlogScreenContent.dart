@@ -136,8 +136,7 @@ class BlogContent extends StatelessWidget {
                         ],
                       ),
                       Container(
-                        height: MediaQuery.of(context).size.height*0.4,
-                        alignment: Alignment.bottomLeft,
+                        alignment: Alignment.topLeft,
                         margin: EdgeInsets.all(10.0),
                         child: Text(
                           this.content,
