@@ -5,11 +5,34 @@ import 'package:buddies_osaka/src/ui/Home/Blogs/AllBlogsPage.dart';
 class Blogs extends StatefulWidget {
   static const String routeName = 'root_screen';
 
+  final bool createdProfile;
+
+  const Blogs({Key key, this.createdProfile}): super(key: key);
+
   @override
-  _BlogsState createState() => _BlogsState();
+  _BlogsState createState() => _BlogsState(this.createdProfile);
 }
 
 class _BlogsState extends State<Blogs> {
+  bool createdProfile;
+
+  _BlogsState(bool createdProfile) {
+    this.createdProfile = createdProfile;
+  }
+
+  @override
+  void didUpdateWidget(Blogs oldWidget) {
+    // TODO: implement didUpdateWidget
+
+    if(this.createdProfile != widget.createdProfile) {
+      setState(() {
+        this.createdProfile = widget.createdProfile;
+      });
+    }
+
+    super.didUpdateWidget(oldWidget);
+  }
+
   @override
   void initState() {
     super.initState();
@@ -30,7 +53,7 @@ class _BlogsState extends State<Blogs> {
                   children: <Widget>[
                     SizedBox(height: 5),
 
-                    BlogsSlidingCardsView(),
+                    BlogsSlidingCardsView(createdProfile: this.createdProfile,),
                     Container(
                       margin: EdgeInsets.only(right: 15.0,),
                       child: Row(

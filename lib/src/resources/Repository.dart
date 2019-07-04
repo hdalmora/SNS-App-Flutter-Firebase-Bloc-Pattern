@@ -28,6 +28,10 @@ class Repository {
 
   Future<void> signInAnonymously() => _authResources.signInAnonymously();
 
+  Future<int> upgradeAnonymAccountWithEmail(String email, String password, String displayName) => _authResources.upgradeAnonymAccountWithEmail(email, password, displayName);
+
+  Future<int> upgradeAnonymAccountWithGoogle() => _authResources.upgradeAnonymAccountWithGoogle();
+
   Future<int> signInWithEmailAndPassword(String email, String password) => _authResources.signInWithEmailAndPassword(email, password);
 
   Future<int> signUpWithEmailAndPassword(String email, String password, String displayName) => _authResources.signUpWithEmailAndPassword(email, password, displayName);
@@ -40,7 +44,11 @@ class Repository {
 
   Future<void> postBlog(String userUID, String userEmail, String title, String content) => _firestoreResources.postBlog(userUID, userEmail, title, content);
 
+  Future<void> postUserCommentToBlog(String userUID, String blogUID, String userEmail, String userName, String comment) => _firestoreResources.postUserCommentToBlog(userUID, blogUID, userEmail, userName, comment);
+
   Stream<QuerySnapshot> blogsList(int limit) => _firestoreResources.blogsList(limit);
+
+  Stream<QuerySnapshot> commentsList(int limit, String blogUID) => _firestoreResources.blogCommentsList(limit, blogUID);
 
   Future<void> likeBlogPost(String blogUID, String userUID) async => _firestoreResources.likeBlogPost(blogUID, userUID);
 

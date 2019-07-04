@@ -53,22 +53,72 @@ class AuthenticationResources {
     }
   }
 
+  Future<int> upgradeAnonymAccountWithEmail(String email, String password, String displayName) async {
+    try {
+      FirebaseUser user = await _firebaseAuth.currentUser();
+
+      final AuthCredential credential = EmailAuthProvider.getCredential(email: email, password: password);
+
+      await user.linkWithCredential(credential);
+
+      await setUserDisplayName(displayName);
+
+      return 1;
+
+    } on PlatformException catch(e) {
+      print(
+          "Platform Exception: Error communicating with the Email Platform: {$e}");
+      return -1;
+    } catch (e) {
+      print("Exception: Upgrade Account: "+ e.toString());
+      return -2;
+    }
+
+  }
+
+  Future<int> upgradeAnonymAccountWithGoogle() async {
+    try {
+
+      final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
+
+      final AuthCredential credential = GoogleAuthProvider.getCredential(
+          idToken: googleAuth.idToken, accessToken: googleAuth.accessToken);
+
+      FirebaseUser user = await _firebaseAuth.currentUser();
+
+      await user.linkWithCredential(credential);
+      await user.reload();
+
+      return 1;
+    } on PlatformException catch(e) {
+      print(
+          "Platform Exception: Error communicating with the Google Platform: {$e}");
+      return -1;
+    } catch (e) {
+      print("Exception: Upgrade Account: "+ e.toString());
+      return -2;
+    }
+  }
+
   Future<void> signWithGoogle() async {
     try {
       final GoogleSignInAccount googleUser = await _googleSignIn.signIn();
-      final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
+      final GoogleSignInAuthentication googleAuth = await googleUser.authentication;
 
       final AuthCredential credential = GoogleAuthProvider.getCredential(
           idToken: googleAuth.idToken, accessToken: googleAuth.accessToken);
 
       await _firebaseAuth.signInWithCredential(credential);
+
+      return 1;
     } on PlatformException catch (e) {
       print(
           "Platform Exception: Error communicating with the Google Platform: {$e}");
-      throw e;
+      return -1;
     } catch (e) {
-      throw Exception(e.toString());
+      print("Exception: Error: ${e.toString()}");
+      return -2;
     }
   }
 
@@ -133,7 +183,13 @@ class AuthenticationResources {
     }
   }
 
-  Future<void> get signOut => _firebaseAuth.signOut();
+  Future<void> get signOut async {
+
+    _firebaseAuth.signOut();
+
+    _googleSignIn.signOut();
+
+  }
 
   Stream<FirebaseUser> get onAuthStateChange =>
       _firebaseAuth.onAuthStateChanged;
