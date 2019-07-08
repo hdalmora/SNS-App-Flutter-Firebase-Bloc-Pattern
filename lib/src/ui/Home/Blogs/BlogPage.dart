@@ -40,7 +40,7 @@ class _BLogPageState extends State<BLogPage> {
 
     final Screen blogScreen = new Screen(
         contentBuilder: (BuildContext context) {
-          return BlogContent(title: this.title, author: this.author, content: this.content, date: this.dateCreated,);
+          return BlogContent(id: this.blogUID,title: this.title, author: this.author, content: this.content, date: this.dateCreated,);
         }
     );
 

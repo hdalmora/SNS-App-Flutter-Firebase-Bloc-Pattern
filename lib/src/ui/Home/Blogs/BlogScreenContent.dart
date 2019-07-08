@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:buddies_osaka/src/ui/Home/Blogs/BLogZoomScaffold.dart';
 import 'package:quill_delta/quill_delta.dart';
 import 'package:zefyr/zefyr.dart';
 import 'dart:convert';
+import 'package:buddies_osaka/src/blocs/blogs/BlogBloc.dart';
+import 'package:buddies_osaka/src/blocs/blogs/BlogBlocProvider.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+
 
 class BlogContent extends StatefulWidget {
 
+  final String id;
   final String title;
   final String blogImagePath;
   final String userProfileImagePath;
@@ -14,6 +18,7 @@ class BlogContent extends StatefulWidget {
   final String date;
 
   BlogContent({
+    this.id,
     this.title,
     this.blogImagePath,
     this.userProfileImagePath,
@@ -31,6 +36,14 @@ class _BlogContentState extends State<BlogContent> {
 
   FocusNode _focusNode;
 
+  BlogBloc _blogBloc;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _blogBloc = BlogBlocProvider.of(context);
+  }
+
   @override
   void initState() {
     super.initState();
@@ -41,6 +54,8 @@ class _BlogContentState extends State<BlogContent> {
     super.dispose();
     _zefyrController.dispose();
     _focusNode.dispose();
+    _blogBloc.dispose();
+
   }
 
   @override
@@ -119,10 +134,21 @@ class _BlogContentState extends State<BlogContent> {
                             child: ClipRRect(
                               borderRadius: BorderRadius.all(Radius.circular(12)),
                               child: Container(
-                                child: Image.asset(
-                                  'assets/images/blog-image-placeholder.jpg',
-                                  fit: BoxFit.cover,
-                                ),
+                                child: FutureBuilder<dynamic>(
+                                    future: _blogBloc.getImageUrl(widget.id),
+                                    builder: (context, AsyncSnapshot<dynamic> snapshot) {
+                                      if(snapshot.hasData) {
+                                        return Container(
+                                            child: CachedNetworkImage(
+                                              fit: BoxFit.cover,
+                                              imageUrl: snapshot.data.toString(),
+                                              placeholder: (context, url) => Center(child: CircularProgressIndicator()),
+                                              errorWidget: (context, url, error) => Icon(Icons.error),
+                                            ),);
+                                      } else {
+                                        return Center(child: CircularProgressIndicator(backgroundColor: Colors.white,),);
+                                      }
+                                    })
                               ),
                             ),
                           ),

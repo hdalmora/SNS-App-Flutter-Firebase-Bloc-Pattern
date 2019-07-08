@@ -265,7 +265,11 @@ class _CommentsScreenState extends State<CommentsScreen>
                               return Center(
                                 child:
                                 Text(
-                                  "No comments for this blog",
+                                  "No comments for this blog", style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18.0
+                                ),
 
                                 ),
                               );
