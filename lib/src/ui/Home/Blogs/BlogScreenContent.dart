@@ -4,6 +4,8 @@ import 'package:zefyr/zefyr.dart';
 import 'dart:convert';
 import 'package:buddies_osaka/src/blocs/blogs/BlogBloc.dart';
 import 'package:buddies_osaka/src/blocs/blogs/BlogBlocProvider.dart';
+import 'package:cached_network_image/cached_network_image.dart';
+
 
 class BlogContent extends StatefulWidget {
 
@@ -137,15 +139,12 @@ class _BlogContentState extends State<BlogContent> {
                                     builder: (context, AsyncSnapshot<dynamic> snapshot) {
                                       if(snapshot.hasData) {
                                         return Container(
-//                                        height: 60.0,
-//                                        width: 60.0,
-                                            decoration: BoxDecoration(
-                                                borderRadius: BorderRadius.circular(30.0),
-                                                color: Colors.transparent,
-                                                image: DecorationImage(
-                                                  fit: BoxFit.cover,
-                                                  image: NetworkImage(snapshot.data.toString()),
-                                                )));
+                                            child: CachedNetworkImage(
+                                              fit: BoxFit.cover,
+                                              imageUrl: snapshot.data.toString(),
+                                              placeholder: (context, url) => Center(child: CircularProgressIndicator()),
+                                              errorWidget: (context, url, error) => Icon(Icons.error),
+                                            ),);
                                       } else {
                                         return Center(child: CircularProgressIndicator(backgroundColor: Colors.white,),);
                                       }
