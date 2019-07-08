@@ -19,10 +19,9 @@ class FirestoreProvider {
           'role': "Registered User",
         });
 
-  Future<void> postBlog(String userUID, String userEmail, String title, String content) async => _firestore
+  Future<DocumentReference> postBlog(String userUID, String userEmail, String title, String content) async => _firestore
         .collection("blogs")
-        .document()
-        .setData(({
+        .add(({
           'authorID': userUID,
           'authorEmail': userEmail,
           'title': title,

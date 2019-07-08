@@ -11,9 +11,7 @@ class BlogBloc {
   final _repository = Repository();
   final _title = BehaviorSubject<String>();
   final _content = BehaviorSubject<String>();
-
   final _comment = BehaviorSubject<String>();
-
   final _isSubmitted = BehaviorSubject<bool>();
   final _userHasPermission = BehaviorSubject<bool>();
 
@@ -101,6 +99,13 @@ class BlogBloc {
     return false;
   }
 
+  Future<String> getImagePath() => _repository.getImageFilePath();
+
+
+  Future<void> uploadImageToStorage(String filePath, String blogID) => _repository.uploadImageToStorageRef(filePath, "BlogsImages", blogID);
+
+  Future<dynamic> getImageUrl(String blogID) => _repository.getImageDownloadUrlFromStorage("BlogsImages", blogID);
+
   Future<String> getUserUID() async {
     FirebaseUser user = await _repository.getUserAuth();
     return user.uid;
@@ -115,13 +120,13 @@ class BlogBloc {
     FirebaseUser user = await _repository.getUserAuth();
     return user.email;
   }
-  Future<void> submit() async {
+  Future<String> submit() async {
       _isSubmitted.sink.add(true);
       String uid = await getUserUID();
       String email = await getUserEmail();
 
-      await _repository.postBlog(uid, email, _title.value, _content.value);
-      _isSubmitted.sink.add(false);
+      DocumentReference docRef = await _repository.postBlog(uid, email, _title.value, _content.value);
+      return docRef.documentID;
   }
 
   Future<bool> userAccessPermission(bool profileCreated) async {

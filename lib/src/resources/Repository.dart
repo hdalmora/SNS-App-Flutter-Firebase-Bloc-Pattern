@@ -1,11 +1,19 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'FirestoreResources.dart';
 import 'AuthenticationResources.dart';
+import 'StorageResources.dart';
 import 'dart:async';
 
 class Repository {
   final _firestoreResources = FirestoreProvider();
   final _authResources = AuthenticationResources();
+  final _storageResources = StorageProvider();
+
+  Future<String> getImageFilePath() => _storageResources.getImageFilePath();
+
+  Future<void> uploadImageToStorageRef(String filePath, String collectionReference, String docID) => _storageResources.uploadImageToStorageRef(filePath, collectionReference, docID);
+
+  Future<dynamic> getImageDownloadUrlFromStorage(String collectionReference, String docID) => _storageResources.getImageDownloadUrlFromStorage(collectionReference, docID);
 
   Stream<FirebaseUser> getUserOnAuthState() => _authResources.onAuthStateChange;
 
@@ -42,7 +50,7 @@ class Repository {
 
   Future<void> signOut() => _authResources.signOut;
 
-  Future<void> postBlog(String userUID, String userEmail, String title, String content) => _firestoreResources.postBlog(userUID, userEmail, title, content);
+  Future<DocumentReference> postBlog(String userUID, String userEmail, String title, String content) => _firestoreResources.postBlog(userUID, userEmail, title, content);
 
   Future<void> postUserCommentToBlog(String userUID, String blogUID, String userEmail, String userName, String comment) => _firestoreResources.postUserCommentToBlog(userUID, blogUID, userEmail, userName, comment);
 

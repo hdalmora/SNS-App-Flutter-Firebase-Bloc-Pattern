@@ -9,6 +9,8 @@ PODS:
     - Firebase/Core
     - Firebase/Firestore (~> 6.0)
     - Flutter
+  - file_picker (0.0.1):
+    - Flutter
   - Firebase/Auth (6.3.0):
     - Firebase/CoreOnly
     - FirebaseAuth (~> 6.1.2)
@@ -20,12 +22,18 @@ PODS:
   - Firebase/Firestore (6.3.0):
     - Firebase/CoreOnly
     - FirebaseFirestore (~> 1.4.0)
+  - Firebase/Storage (6.3.0):
+    - Firebase/CoreOnly
+    - FirebaseStorage (~> 3.2.1)
   - firebase_auth (0.0.1):
     - Firebase/Auth (~> 6.0)
     - Firebase/Core
     - Flutter
   - firebase_core (0.0.1):
     - Firebase/Core
+    - Flutter
+  - firebase_storage (0.0.1):
+    - Firebase/Storage
     - Flutter
   - FirebaseAnalytics (6.0.2):
     - FirebaseCore (~> 6.0)
@@ -65,6 +73,10 @@ PODS:
     - FirebaseCore (~> 6.0)
     - GoogleUtilities/Environment (~> 6.0)
     - GoogleUtilities/UserDefaults (~> 6.0)
+  - FirebaseStorage (3.2.1):
+    - FirebaseAuthInterop (~> 1.0)
+    - FirebaseCore (~> 6.0)
+    - GTMSessionFetcher/Core (~> 1.1)
   - Flutter (1.0.0)
   - flutter_country_picker (0.0.1):
     - Flutter
@@ -140,8 +152,10 @@ PODS:
 
 DEPENDENCIES:
   - cloud_firestore (from `.symlinks/plugins/cloud_firestore/ios`)
+  - file_picker (from `.symlinks/plugins/file_picker/ios`)
   - firebase_auth (from `.symlinks/plugins/firebase_auth/ios`)
   - firebase_core (from `.symlinks/plugins/firebase_core/ios`)
+  - firebase_storage (from `.symlinks/plugins/firebase_storage/ios`)
   - Flutter (from `.symlinks/flutter/ios`)
   - flutter_country_picker (from `.symlinks/plugins/flutter_country_picker/ios`)
   - google_sign_in (from `.symlinks/plugins/google_sign_in/ios`)
@@ -159,6 +173,7 @@ SPEC REPOS:
     - FirebaseCore
     - FirebaseFirestore
     - FirebaseInstanceID
+    - FirebaseStorage
     - GoogleAppMeasurement
     - GoogleSignIn
     - GoogleToolboxForMac
@@ -173,10 +188,14 @@ SPEC REPOS:
 EXTERNAL SOURCES:
   cloud_firestore:
     :path: ".symlinks/plugins/cloud_firestore/ios"
+  file_picker:
+    :path: ".symlinks/plugins/file_picker/ios"
   firebase_auth:
     :path: ".symlinks/plugins/firebase_auth/ios"
   firebase_core:
     :path: ".symlinks/plugins/firebase_core/ios"
+  firebase_storage:
+    :path: ".symlinks/plugins/firebase_storage/ios"
   Flutter:
     :path: ".symlinks/flutter/ios"
   flutter_country_picker:
@@ -193,15 +212,18 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   BoringSSL-GRPC: db8764df3204ccea016e1c8dd15d9a9ad63ff318
   cloud_firestore: bea98f51ff83b368d2984d3a6b9a6ac8dd89bf63
+  file_picker: 408623be2125b79a4539cf703be3d4b3abe5e245
   Firebase: 8432d732974498afd5987e9001a05f90f1a3d625
   firebase_auth: ba238762663f6b3503cc5468c50d652df1306185
   firebase_core: 44f31f51532812598f0f9f4af0caa705b9edfc19
+  firebase_storage: 96665eb4cf0a68e51ac8568f13d7841c3ed881bd
   FirebaseAnalytics: 470ddab7253b21ad5a40bebd4a9903d7ae19386a
   FirebaseAuth: 7fa2cc010b93770831a4e7a60651b52c3b8d111a
   FirebaseAuthInterop: 0ffa57668be100582bb7643d4fcb7615496c41fc
   FirebaseCore: 68f8a7f50cdae542715d4e86afa37c4067217dcb
   FirebaseFirestore: 75768d91aad491eccdc02202b8161cff9872300e
   FirebaseInstanceID: f20243a1d828e0e9a3798b995174dedc16f1b32a
+  FirebaseStorage: 926d41552072b9fee67aa645760f05f87b7ce604
   Flutter: 58dd7d1b27887414a370fcccb9e645c08ffd7a6a
   flutter_country_picker: b73efbc3f1b01519adb99bf8635865737b9422df
   google_sign_in: 27e70a98b529f0b076d4b19f231b81da28b1750b
