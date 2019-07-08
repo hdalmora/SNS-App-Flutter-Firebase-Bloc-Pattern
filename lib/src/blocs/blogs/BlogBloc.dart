@@ -58,7 +58,7 @@ class BlogBloc {
 
   final _validateComment = StreamTransformer<String, String>.fromHandlers(
       handleData: (content, sink) {
-        if (content.length > 14) {
+        if (content.length > 31) {
           sink.add(content);
         } else {
           sink.addError("Comment must have at least " + content.length.toString() + "/15 characters");
@@ -92,9 +92,10 @@ class BlogBloc {
   }
 
   bool validateComment() {
+    print("COMMENT VALUE: ${_comment.value.length}");
     if(_comment.value != null &&
        _comment.value.isNotEmpty &&
-       _comment.value.length > 14) {
+       _comment.value.length > 31) {
       return true;
     }
     return false;

@@ -7,6 +7,11 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:buddies_osaka/src/models/BlogModel.dart';
 import 'package:buddies_osaka/src/ui/Home/Blogs/BlogPage.dart';
 import 'dart:async';
+import 'package:quill_delta/quill_delta.dart';
+import 'package:zefyr/zefyr.dart';
+import 'dart:convert';
+
+
 
 class BlogsSlidingCardsView extends StatefulWidget {
 
@@ -272,6 +277,8 @@ class CardContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final document = NotusDocument.fromDelta(Delta.fromJson(json.decode(content) as List));
+
     return Padding(
       padding: const EdgeInsets.all(8.0),
       child: Column(
@@ -291,7 +298,7 @@ class CardContent extends StatelessWidget {
           Transform.translate(
             offset: Offset(8 * offset, 0),
             child: Text(
-              content,
+              document.toPlainText(),
               overflow: TextOverflow.ellipsis,
               maxLines: 1,
               style: TextStyle(

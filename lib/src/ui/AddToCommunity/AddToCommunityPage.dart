@@ -54,7 +54,7 @@ class _AddToCommunityPageState extends State<AddToCommunityPage> {
                       padding: EdgeInsets.only(left: 10.0, right: 10.0),
                       child: ButtonMainTextIcon(
                         callback: () async {
-                          Navigator.push(
+                          Navigator.pushReplacement(
                               context,
                               new MaterialPageRoute(
                                   builder: (BuildContext context) => AddBlogPage()));
@@ -74,7 +74,7 @@ class _AddToCommunityPageState extends State<AddToCommunityPage> {
                       padding: EdgeInsets.only(left: 10.0, right: 10.0),
                       child: ButtonMainTextIcon(
                         callback: () async {
-                          Navigator.push(
+                          Navigator.pushReplacement(
                               context,
                               new MaterialPageRoute(
                                   builder: (BuildContext context) => AddEventPage()));

@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:buddies_osaka/src/ui/Home/Blogs/BLogZoomScaffold.dart';
+import 'package:quill_delta/quill_delta.dart';
+import 'package:zefyr/zefyr.dart';
+import 'dart:convert';
 
-class BlogContent extends StatelessWidget {
+class BlogContent extends StatefulWidget {
 
   final String title;
   final String blogImagePath;
@@ -20,7 +23,32 @@ class BlogContent extends StatelessWidget {
   });
 
   @override
+  _BlogContentState createState() => _BlogContentState();
+}
+
+class _BlogContentState extends State<BlogContent> {
+  ZefyrController _zefyrController;
+
+  FocusNode _focusNode;
+
+  @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _zefyrController.dispose();
+    _focusNode.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final document = NotusDocument.fromDelta(Delta.fromJson(json.decode(widget.content) as List));
+    _zefyrController = ZefyrController(document);
+    _focusNode = FocusNode();
+
     return Stack(
       children: <Widget>[
         SafeArea(
@@ -32,7 +60,7 @@ class BlogContent extends StatelessWidget {
                 Container(
                   margin: EdgeInsets.only(right: 10.0, left: 10.0),
                   child: Text(
-                    this.title,
+                    this.widget.title,
                     style: TextStyle(
                         fontSize: 28.0,
                         fontWeight: FontWeight.bold,
@@ -52,7 +80,7 @@ class BlogContent extends StatelessWidget {
                           alignment: Alignment.bottomLeft,
                           margin: EdgeInsets.only(top: 5.0),
                           child: Text(
-                            this.author,
+                            this.widget.author,
                             style: TextStyle(
                                 fontSize: 16.0,
                                 fontWeight: FontWeight.bold,
@@ -68,7 +96,7 @@ class BlogContent extends StatelessWidget {
                           child: Container(
                             alignment: Alignment.bottomRight,
                             child: Text(
-                              this.date,
+                              this.widget.date,
                               style: TextStyle(
                                   fontSize: 15.0,
                                   fontWeight: FontWeight.bold,
@@ -128,7 +156,6 @@ class BlogContent extends StatelessWidget {
                                 child: Image.asset(
                                   'assets/images/user-image-placeholder.jpg',
                                   fit: BoxFit.cover,
-//                        alignment: Alignment(lerp(1, 0), 0),
                                 ),
                               ),
                             ),
@@ -136,14 +163,12 @@ class BlogContent extends StatelessWidget {
                         ],
                       ),
                       Container(
+                        margin: EdgeInsets.only(left: 2.0, top: 10.0),
                         alignment: Alignment.topLeft,
-                        margin: EdgeInsets.all(10.0),
-                        child: Text(
-                          this.content,
-                          style: TextStyle(
-                              fontSize: 16.0,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black45),
+                        height: MediaQuery.of(context).size.height * 0.5,
+                        child:
+                        ZefyrScaffold(
+                          child: ZefyrEditor(controller: _zefyrController, focusNode: _focusNode, enabled: false,),
                         ),
                       ),
                     ],

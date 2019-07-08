@@ -5,6 +5,11 @@ import 'package:buddies_osaka/src/components/input-text-main.dart';
 import 'package:buddies_osaka/src/blocs/blogs/BlogBloc.dart';
 import 'package:buddies_osaka/src/blocs/blogs/BlogBlocProvider.dart';
 import 'package:buddies_osaka/src/models/BlogCommentModel.dart';
+import 'package:buddies_osaka/src/ui/Home/Blogs/BlogNewCommentPage.dart';
+import 'dart:convert';
+import 'package:quill_delta/quill_delta.dart';
+import 'package:zefyr/zefyr.dart';
+import 'dart:async';
 
 final commentsScreenKey = new GlobalKey(debugLabel: 'CommentsScreen');
 
@@ -53,12 +58,20 @@ class _CommentsScreenState extends State<CommentsScreen>
   @override
   void initState() {
     super.initState();
+
+
+
     _controller = ScrollController()..addListener(_scrollListener);
     titleAnimationController = new AnimationController(
       duration: const Duration(milliseconds: 250),
       vsync: this,
     );
   }
+
+  Delta getDelta(String doc) {
+    return Delta.fromJson(json.decode(doc) as List);
+  }
+
 
   void _scrollListener() async {
 //    print("SCROLL LISTENER:::");
@@ -178,139 +191,151 @@ class _CommentsScreenState extends State<CommentsScreen>
 
   @override
   Widget build(BuildContext context) {
-    return new ZoomScaffoldMenuController(
-        builder: (BuildContext context, CommentsController commentsController) {
-      if (commentsController.state == CommentsState.closed ||
-          commentsController.state == CommentsState.closing ||
-          selectorYTop == null) {}
+    return Scaffold(
+      body: new ZoomScaffoldMenuController(
+          builder: (BuildContext context, CommentsController commentsController) {
+        if (commentsController.state == CommentsState.closed ||
+            commentsController.state == CommentsState.closing ||
+            selectorYTop == null) {}
 
-      final animationIntervalDuration = 0.5;
-      final perListItemDelay =
-      commentsController.state != CommentsState.closing ? 0.15 : 0.0;
+        final animationIntervalDuration = 0.5;
+        final perListItemDelay =
+        commentsController.state != CommentsState.closing ? 0.15 : 0.0;
 
-      final animationIntervalStart = 1 * perListItemDelay;
-      final animationIntervalEnd =
-          animationIntervalStart + animationIntervalDuration;
+        final animationIntervalStart = 1 * perListItemDelay;
+        final animationIntervalEnd =
+            animationIntervalStart + animationIntervalDuration;
 
-      return new Container(
-        width: double.infinity,
-        height: double.infinity,
-        decoration: new BoxDecoration(
-          color: Color(0xFF204D9E),
-        ),
-        child: new Material(
-          color: Colors.transparent,
-          child: new Stack(
-            children: [
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.start,
-                children: <Widget>[
-                  Flexible(
-                    flex: 2,
-                    child: createMenuTitle(commentsController),
-                  ),
-                  Flexible(
-                    flex: 11,
-                    child: StreamBuilder(
-                      stream: _blogBloc.commentsList(5, widget.blogUID),
-                      builder: (BuildContext context,
-                          AsyncSnapshot<QuerySnapshot> snapshot) {
-
-                        if (snapshot.hasData) {
-                          List<DocumentSnapshot> docs = snapshot.data.documents;
-                          List<BlogCommentModel> commentsList = List<BlogCommentModel>();
-
-                          docs.forEach((doc) {
-                            commentsList.add(BlogCommentModel.fromDocument(doc));
-                          });
-
-                          if(commentsList.isNotEmpty) {
-                            return ListView.builder(
-                              controller: _controller,
-                              scrollDirection: Axis.vertical,
-                              itemCount: commentsList.length,
-                              itemBuilder: (context, position) {
-                                DateTime date = DateTime.fromMicrosecondsSinceEpoch(
-                                    commentsList[position].dateCreated.microsecondsSinceEpoch);
-
-                                return AnimatedCommentListItem(
-                                  commentsState: commentsController.state,
-                                  duration: const Duration(milliseconds: 600),
-                                  curve: new Interval(animationIntervalStart, animationIntervalEnd,
-                                      curve: Curves.easeOut),
-                                  commentsListItem: _CommentsListItem(
-                                    name: commentsList[position].authorName,
-                                    comment: commentsList[position].comment,
-                                    date: date.day.toString() + "/" + date.month.toString() + "/" + date.year.toString(),
-                                  ),
-                                );
-
-
-
-                              },
-                            );
-                          } else {
-                            return Center(
-                              child:
-                              Text(
-                                "No comments for this blog",
-
-                              ),
-                            );
-                          }
-                        }
-                      },
+        return new Container(
+          width: double.infinity,
+          height: double.infinity,
+          decoration: new BoxDecoration(
+            color: Color(0xFF204D9E),
+          ),
+          child: new Material(
+            color: Colors.transparent,
+            child: new Stack(
+              children: [
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Flexible(
+                      flex: 2,
+                      child: createMenuTitle(commentsController),
                     ),
-                  ),
-                  Flexible(
-                    flex:2,
-                    child: Container(
-                      width: MediaQuery.of(context).size.width * 0.85,
-                      margin: const EdgeInsets.all(8.0),
-                      child: Card(
-                        child: Container(
-                          padding: EdgeInsets.all(0.0),
-                          child: new Row(
-                            children: <Widget>[
-                              new Flexible(
-                                child: StreamBuilder(
-                                    stream: _blogBloc.comment,
-                                    builder:
-                                        (context, AsyncSnapshot<String> snapshot) {
-                                      return InputTextMain(
-                                        hintText: "Post a comment",
-                                        height: 80.0,
-                                        textType: TextInputType.text,
-                                        onChanged: _blogBloc.changeComment,
-                                        errorText: snapshot.error,
-                                        password: false,
-                                      );
-                                    }),
-//                                ),
-                              ),
-                              new Container(
-                                margin: const EdgeInsets.symmetric(horizontal: 4.0),
-                                child: new IconButton(
-                                  icon: new Icon(Icons.send),
-                                  onPressed: () async {
-                                    await _blogBloc.postComment(widget.blogUID);
-                                  },
+                    Flexible(
+                      flex: 11,
+                      child: StreamBuilder(
+                        stream: _blogBloc.commentsList(5, widget.blogUID),
+                        builder: (BuildContext context,
+                            AsyncSnapshot<QuerySnapshot> snapshot) {
+
+                          if (snapshot.hasData) {
+                            List<DocumentSnapshot> docs = snapshot.data.documents;
+                            List<BlogCommentModel> commentsList = List<BlogCommentModel>();
+
+                            docs.forEach((doc) {
+                              commentsList.add(BlogCommentModel.fromDocument(doc));
+                            });
+
+                            if(commentsList.isNotEmpty) {
+                              return ListView.builder(
+                                controller: _controller,
+                                scrollDirection: Axis.vertical,
+                                itemCount: commentsList.length,
+                                itemBuilder: (context, position) {
+                                  DateTime date = DateTime.fromMicrosecondsSinceEpoch(
+                                      commentsList[position].dateCreated.microsecondsSinceEpoch);
+
+                                  return AnimatedCommentListItem(
+                                    commentsState: commentsController.state,
+                                    duration: const Duration(milliseconds: 600),
+                                    curve: new Interval(animationIntervalStart, animationIntervalEnd,
+                                        curve: Curves.easeOut),
+                                    commentsListItem: _CommentsListItem(
+                                      name: commentsList[position].authorName,
+                                      comment: commentsList[position].comment,
+                                      date: date.day.toString() + "/" + date.month.toString() + "/" + date.year.toString(),
+                                    ),
+                                  );
+                                },
+                              );
+                            } else {
+                              return Center(
+                                child:
+                                Text(
+                                  "No comments for this blog",
+
                                 ),
-                              )
-                            ],
+                              );
+                            }
+                          }
+                        },
+                      ),
+                    ),
+
+                    Flexible(
+                      flex:2,
+                      child: InkWell(
+                        onTap: () {
+                          Navigator.
+                          push(
+                              context,
+
+                              new MaterialPageRoute(
+                                  builder: (BuildContext context) =>
+
+                                      BlogNewCommentPage(blogUID: widget.blogUID,)));
+                        },
+                        child: Container(
+                          alignment: Alignment.center,
+                          width: MediaQuery.of(context).size.width * 0.50,
+                          margin: const EdgeInsets.all(8.0),
+                          child: Card(
+                            child: Container(
+                              padding: EdgeInsets.all(6.0),
+                              child: Row(
+                                children: <Widget>[
+                                  Expanded(
+                                    flex: 5,
+                                    child: Text("Post a new comment",
+                                      style: TextStyle(
+                                          color: Colors.black45,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 15.0
+                                      ),
+                                    ),
+                                  ),
+                                  Flexible(
+                                    flex: 1,
+                                    child: Container(
+                                      margin: const EdgeInsets.only(right: 10.0),
+                                      child: new IconButton(
+                                        icon: new Icon(Icons.comment, color: Colors.blue,),
+                                        onPressed: ()  {
+                                        },
+                                      ),
+                                    ),
+                                  ),
+
+
+                                ],
+                              ),
+                            ),
                           ),
                         ),
                       ),
+
                     ),
-                  ),
-                ],
-              ),
-            ],
+                  ],
+                ),
+              ],
+            ),
           ),
-        ),
-      );
-    });
+        );
+      }),
+    );
   }
 }
 
@@ -384,34 +409,57 @@ class _AnimatedMenuListItemState
   }
 }
 
-class _CommentsListItem extends StatelessWidget {
+class _CommentsListItem extends StatefulWidget {
   final String name;
   final String comment;
   final String date;
   final Function() onTap;
 
+  ZefyrController zefyrController;
+  FocusNode focusNode;
+
   _CommentsListItem({
     this.name,
     this.comment,
+    this.zefyrController,
+    this.focusNode,
     this.date,
     this.onTap,
   });
 
   @override
+  __CommentsListItemState createState() => __CommentsListItemState();
+}
+
+class __CommentsListItemState extends State<_CommentsListItem> {
+  @override
+  void dispose() {
+
+    widget.zefyrController.dispose();
+    widget.focusNode.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final document = NotusDocument.fromDelta(Delta.fromJson(json.decode(widget.comment) as List));
+    widget.zefyrController = ZefyrController(document);
+    widget.focusNode = FocusNode();
+
+
     return new InkWell(
       splashColor: const Color(0x44000000),
-      onTap: onTap,
+      onTap: widget.onTap,
       child: Padding(
         padding: const EdgeInsets.only(top: 8.0, left: 8.0, bottom: 8.0),
         child: Card(
           child: Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Row(
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
               children: <Widget>[
-                Flexible(
-                  flex: 2,
-                  child: Stack(children: <Widget>[
+                Row(
+                  children: <Widget>[
                     Container(
                       height: 50.0,
                       width: 50.0,
@@ -423,61 +471,49 @@ class _CommentsListItem extends StatelessWidget {
                               image: NetworkImage(
                                   'https://pixel.nymag.com/imgs/daily/vulture/2017/06/14/14-tom-cruise.w700.h700.jpg'))),
                     ),
-                  ]),
+
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        Container(
+                          margin:EdgeInsets.only(top: 5.0, left: 15.0, bottom: 2.0),
+                          child: Text(
+                            widget.name,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black54,
+                              fontSize: 14.0,
+                              fontFamily: 'Montserrat',
+                            ),
+                          ),
+                        ),
+
+                        Container(
+                          margin: EdgeInsets.only(left: 15.0),
+                          alignment: Alignment.topLeft,
+                          child: Text(
+                            widget.date,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black26,
+                              fontSize: 11.0,
+                              fontFamily: 'Montserrat',
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-                Flexible(
-                  flex: 9,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[
-                      Container(
-                        margin: EdgeInsets.only(left: 10.0),
-                        alignment: Alignment.topLeft,
-                        child: Text(
-                          name,
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black54,
-                            fontSize: 14.0,
-                            fontFamily: 'Montserrat',
-                          ),
-                        ),
-                      ),
-                      Container(
-                        margin: EdgeInsets.only(left: 10.0, top: 2.0),
-                        alignment: Alignment.topLeft,
-                        child: Text(
-                          comment,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            color: Colors.black38,
-                            fontSize: 13.0,
-                            fontFamily: 'Montserrat',
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                Flexible(
-                  flex: 4,
-                  child: Column(
-                    children: <Widget>[
-                      Container(
-                        margin: EdgeInsets.only(left: 10.0),
-                        alignment: Alignment.topLeft,
-                        child: Text(
-                          date,
-                          style: TextStyle(
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black26,
-                            fontSize: 11.0,
-                            fontFamily: 'Montserrat',
-                          ),
-                        ),
-                      ),
-                    ],
+
+                Container(
+                  margin: EdgeInsets.only(left: 2.0, top: 10.0),
+                  alignment: Alignment.topLeft,
+                  height: 100,
+                  child:
+                  ZefyrScaffold(
+                    child: ZefyrEditor(controller: widget.zefyrController, focusNode: widget.focusNode, enabled: false,),
                   ),
                 ),
               ],
