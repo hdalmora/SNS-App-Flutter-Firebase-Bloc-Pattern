@@ -1,3 +1,3 @@
-# SOLNetwork - Azur Co. Ltd
+# SNS APP Concept developed with Flutter && Firebase
 
-Flutter development (Android/IOS) of the Buddies Osaka App
+Flutter development (Android/IOS) 
