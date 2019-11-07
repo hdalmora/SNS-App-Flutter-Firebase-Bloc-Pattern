@@ -5,6 +5,12 @@
 .history
 .svn/
 
+# Python lib files
+venv/include/lib
+
+# Firebase specific files w/ credentials
+google-services.json
+
 # Visual Studio Code related
 .vscode/
 
